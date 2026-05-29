@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMI-IPAC Heat Exchanger Design</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+        .input-group { margin-bottom: 1rem; }
+        .input-label { display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.25rem; }
+        .input-field { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; }
+        .input-field:focus { outline: none; border-color: #2563eb; ring: 1px solid #2563eb; }
+        .section-title { font-size: 1.25rem; font-weight: 700; color: #1f2937; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e5e7eb; }
+        .result-label { font-weight: 600; color: #4b5563; }
+        .result-value { font-family: monospace; font-size: 1rem; color: #111827; }
+        .btn { display: inline-flex; justify-content: center; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.375rem; cursor: pointer; transition: background-color 0.2s; }
+        .btn-primary { background-color: #2563eb; color: white; border: none; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-secondary { background-color: #10b981; color: white; border: none; }
+        .btn-secondary:hover { background-color: #059669; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
+        <!-- Header -->
+        <div class="bg-gray-900 px-6 py-6 border-b border-gray-700">
+            <h1 class="text-2xl font-bold text-white tracking-wider">DIVERSIFIED MANUFACTURING INC.</h1>
+            <p class="text-gray-400 text-sm mt-1">IPAC Air Cooled Heat Exchanger Design Program</p>
+        </div>
+
+        <div class="p-6">
+            <form id="calcForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div>
+                        <h2 class="section-title">Compressor Details</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="input-group">
+                                <label class="input-label">Suction Pressure (psia)</label>
+                                <input type="number" step="any" id="comp_suction_p" class="input-field" value="14.7" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Suction Temp (°F)</label>
+                                <input type="number" step="any" id="comp_suction_t" class="input-field" value="85" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Suction RH (%)</label>
+                                <input type="number" step="any" id="comp_suction_rh" class="input-field" value="36" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Flow Rate (Acfm)</label>
+                                <input type="number" step="any" id="comp_flow" class="input-field" value="1500" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">>1 Compression Stage</label>
+                                <select id="comp_stages" class="input-field">
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h2 class="section-title mt-6">Aftercooler Configuration</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="input-group">
+                                <label class="input-label">Base Model</label>
+                                <select id="config_model" class="input-field"></select>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Standard Tube Length (in)</label>
+                                <select id="config_tube_len_std" class="input-field">
+                                    <option value="59" selected>59"</option>
+                                    <option value="51">51"</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Bundle Type</label>
+                                <select id="config_bundle_type" class="input-field">
+                                    <option value="Fixed">Fixed</option>
+                                    <option value="Removable">Removable</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Tube Design Press (psig)</label>
+                                <input type="number" step="any" id="config_tube_dp" class="input-field" value="150" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Tube Type</label>
+                                <select id="config_tube_type" class="input-field">
+                                    <option value="Std groove">Std groove</option>
+                                    <option value="Plain">Plain</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Tube Material</label>
+                                <select id="config_tube_mat" class="input-field">
+                                    <option value="Copper C12200">Copper C12200</option>
+                                    <option value="Admiralty brass">Admiralty brass</option>
+                                    <option value="90/10 Cu/Ni">90/10 Cu/Ni</option>
+                                    <option value="70/30 Cu/Ni">70/30 Cu/Ni</option>
+                                    <option value="Stainless S3040*">Stainless S3040*</option>
+                                    <option value="Stainless S3160*">Stainless S3160*</option>
+                                </select>
+                            </div>
+                            <div class="input-group col-span-2">
+                                <label class="input-label">Tube Length Type</label>
+                                <select id="config_tube_len_type" class="input-field">
+                                    <option value="Standard">Standard</option>
+                                    <option value="Custom">Custom</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div>
+                        <h2 class="section-title">Tube Side (Compressed Gas)</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="input-group">
+                                <label class="input-label">Fluid</label>
+                                <select id="tube_fluid" class="input-field">
+                                    <option value="Air">Air</option>
+                                    <option value="Argon">Argon</option>
+                                    <option value="CO2">CO2</option>
+                                    <option value="CO">CO</option>
+                                    <option value="He">He</option>
+                                    <option value="H2">H2</option>
+                                    <option value="CH4">CH4</option>
+                                    <option value="N2">N2</option>
+                                    <option value="O2">O2</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Inlet Pressure (psig)</label>
+                                <input type="number" step="any" id="tube_p_in" class="input-field" value="150" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Flow Rate</label>
+                                <div class="flex">
+                                    <input type="number" step="any" id="tube_flow" class="input-field rounded-r-none w-2/3" value="1423" required>
+                                    <select id="tube_flow_unit" class="input-field rounded-l-none w-1/3 border-l-0 bg-gray-50">
+                                        <option value="Scfm">Scfm</option>
+                                        <option value="Acfm">Acfm</option>
+                                        <option value="lb/s">lb/s</option>
+                                        <option value="lb/min">lb/min</option>
+                                        <option value="lb/h">lb/h</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Inlet Temp (°F)</label>
+                                <input type="number" step="any" id="tube_t_in" class="input-field" value="250" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Fouling Resist (R.ft2.h/Btu)</label>
+                                <input type="number" step="any" id="tube_fouling" class="input-field" value="0" required>
+                            </div>
+                        </div>
+
+                        <h2 class="section-title mt-6">Shell Side (Cooling Water)</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="input-group">
+                                <label class="input-label">Fluid</label>
+                                <select id="shell_fluid" class="input-field">
+                                    <option value="Water">Water</option>
+                                    <option value="Sea water">Sea water</option>
+                                    <option value="Water/ethylene glycol">Water/ethylene glycol</option>
+                                    <option value="Water/propylene glycol">Water/propylene glycol</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Inlet Flow Rate</label>
+                                <div class="flex">
+                                    <input type="number" step="any" id="shell_flow" class="input-field rounded-r-none w-2/3" value="60" required>
+                                    <select id="shell_flow_unit" class="input-field rounded-l-none w-1/3 border-l-0 bg-gray-50">
+                                        <option value="USgpm">USgpm</option>
+                                        <option value="lb/s">lb/s</option>
+                                        <option value="lb/min">lb/min</option>
+                                        <option value="lb/h">lb/h</option>
+                                        <option value="litre/min">litre/min</option>
+                                        <option value="m3/s">m3/s</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Inlet Temp (°F)</label>
+                                <input type="number" step="any" id="shell_t_in" class="input-field" value="70" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Fouling Resist (R.ft2.h/Btu)</label>
+                                <input type="number" step="any" id="shell_fouling" class="input-field" value="0" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Surface Area Margin (%)</label>
+                                <input type="number" step="any" id="shell_margin" class="input-field" value="0" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t border-gray-200 pt-6 flex items-center justify-between">
+                    <div id="errorBox" class="text-red-600 font-semibold hidden"></div>
+                    <button type="submit" id="calculateBtn" class="btn btn-primary w-full md:w-auto px-8 py-3 text-lg">Calculate Performance</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="bg-gray-50 px-6 py-8 border-t border-gray-200 hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Calculation Results</h2>
+                <button id="downloadPdfBtn" class="btn btn-secondary flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Download Datasheet
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Tube Side Results -->
+                <div class="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Tube Side (Gas)</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span class="result-label">Outlet Temp:</span> <span id="res_tube_t_out" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Pressure Drop:</span> <span id="res_tube_dp" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Reynolds No:</span> <span id="res_tube_re" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Effective HTC:</span> <span id="res_tube_htc" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Dew Point:</span> <span id="res_tube_dew" class="result-value"></span></div>
+                    </div>
+                </div>
+
+                <!-- Shell Side Results -->
+                <div class="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Shell Side (Water)</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span class="result-label">Outlet Temp:</span> <span id="res_shell_t_out" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Pressure Drop:</span> <span id="res_shell_dp" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Reynolds No:</span> <span id="res_shell_re" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Effective HTC:</span> <span id="res_shell_htc" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Tube Surface T:</span> <span id="res_shell_tsurf" class="result-value"></span></div>
+                    </div>
+                </div>
+
+                <!-- Overall Results -->
+                <div class="bg-white p-4 rounded-md shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Overall Performance</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between"><span class="result-label">Total Heat:</span> <span id="res_q_total" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Condensing Heat:</span> <span id="res_q_cond" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Condensate:</span> <span id="res_condensate" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">LMTD:</span> <span id="res_lmtd" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Overall HTC (U):</span> <span id="res_u" class="result-value"></span></div>
+                        <div class="flex justify-between"><span class="result-label">Area / Margin:</span> <span id="res_area_margin" class="result-value"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Populate Models
+    const models = [
+        'W0035', 'W0040', 'W0045', 'W0050', 'W0060', 'W0070', 'W0080', 'W0090', 'W0100', 'W0110', 
+        'W0130', 'W0150', 'W0180', 'W0200', 'W0230', 'W0250', 'W0280', 'W0300', 'W0350', 'W0400', 
+        'W0450', 'W0500', 'W0600', 'W0700', 'W0800', 'W0900', 'W1000', 'W1200', 'W1400', 'W1600', 
+        'W1800', 'W2000', 'W2500', 'W3000', 'W4000', 'W5000'
+    ]; // Ensures W0230 is in the list
+    const modelSelect = document.getElementById('config_model');
+    models.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        if (m === 'W0230') opt.selected = true;
+        modelSelect.appendChild(opt);
+    });
+
+    let currentResults = null;
+
+    document.getElementById('calcForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = document.getElementById('calculateBtn');
+        const errorBox = document.getElementById('errorBox');
+        const resultsSection = document.getElementById('resultsSection');
+        
+        btn.textContent = 'Calculating...';
+        btn.disabled = true;
+        errorBox.classList.add('hidden');
+        resultsSection.classList.add('hidden');
+
+        // Gather data
+        const payload = {
+            compressor: {
+                suction_p: parseFloat(document.getElementById('comp_suction_p').value),
+                suction_t: parseFloat(document.getElementById('comp_suction_t').value),
+                suction_rh: parseFloat(document.getElementById('comp_suction_rh').value),
+                flow: parseFloat(document.getElementById('comp_flow').value),
+                stages_gt_1: document.getElementById('comp_stages').value
+            },
+            config: {
+                model: document.getElementById('config_model').value,
+                tube_length_std: document.getElementById('config_tube_len_std').value,
+                bundle_type: document.getElementById('config_bundle_type').value,
+                tube_dp: parseFloat(document.getElementById('config_tube_dp').value),
+                tube_type: document.getElementById('config_tube_type').value,
+                tube_material: document.getElementById('config_tube_mat').value,
+                tube_length_type: document.getElementById('config_tube_len_type').value
+            },
+            tube_side: {
+                fluid: document.getElementById('tube_fluid').value,
+                p_in: parseFloat(document.getElementById('tube_p_in').value),
+                flow: parseFloat(document.getElementById('tube_flow').value),
+                flow_unit: document.getElementById('tube_flow_unit').value,
+                t_in: parseFloat(document.getElementById('tube_t_in').value),
+                fouling: parseFloat(document.getElementById('tube_fouling').value)
+            },
+            shell_side: {
+                fluid: document.getElementById('shell_fluid').value,
+                flow: parseFloat(document.getElementById('shell_flow').value),
+                flow_unit: document.getElementById('shell_flow_unit').value,
+                t_in: parseFloat(document.getElementById('shell_t_in').value),
+                fouling: parseFloat(document.getElementById('shell_fouling').value),
+                margin: parseFloat(document.getElementById('shell_margin').value)
+            }
+        };
+
+        try {
+            const res = await fetch('/.netlify/functions/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(`Server Error: ${text}`);
+            }
+
+            const data = await res.json();
+            currentResults = data;
+
+            // Populate results
+            const setVal = (id, val, unit) => document.getElementById(id).textContent = val !== undefined && val !== null ? `${val} ${unit}` : 'N/A';
+            
+            setVal('res_tube_t_out', data.tube_side?.t_out, '°F');
+            setVal('res_tube_dp', data.tube_side?.dp, 'psi');
+            setVal('res_tube_re', data.tube_side?.re, '');
+            setVal('res_tube_htc', data.tube_side?.htc, 'Btu/h.ft2.R');
+            setVal('res_tube_dew', data.tube_side?.dew_point, '°F');
+
+            setVal('res_shell_t_out', data.shell_side?.t_out, '°F');
+            setVal('res_shell_dp', data.shell_side?.dp, 'psi');
+            setVal('res_shell_re', data.shell_side?.re, '');
+            setVal('res_shell_htc', data.shell_side?.htc, 'Btu/h.ft2.R');
+            setVal('res_shell_tsurf', data.shell_side?.t_surf, '°F');
+
+            setVal('res_q_total', data.overall?.q_total, 'Btu/h');
+            setVal('res_q_cond', data.overall?.q_cond, 'Btu/h');
+            setVal('res_condensate', data.overall?.condensate, 'lb/h');
+            setVal('res_lmtd', data.overall?.lmtd, '°F');
+            setVal('res_u', data.overall?.u, 'Btu/h.ft2.R');
+            
+            const area = data.overall?.area || 0;
+            const margin = data.overall?.margin || 0;
+            document.getElementById('res_area_margin').textContent = `${area} ft2 / ${margin}%`;
+
+            resultsSection.classList.remove('hidden');
+        } catch (err) {
+            errorBox.textContent = err.message;
+            errorBox.classList.remove('hidden');
+        } finally {
+            btn.textContent = 'Calculate Performance';
+            btn.disabled = false;
+        }
+    });
+
+    document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+        if (!currentResults) return;
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text("Diversified Manufacturing Inc.", 14, 20);
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("410 Ohio Street, Lockport NY 14094", 14, 26);
+        doc.text("sales@dmimfg.com | (716) 434-5585 | dmimfg.com", 14, 31);
+        
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("IPAC Air Cooled Heat Exchanger Datasheet", 14, 45);
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        const date = new Date().toLocaleDateString();
+        doc.text(`Date: ${date}`, 14, 52);
+        const model = document.getElementById('config_model').value;
+        doc.text(`Model Code: ${model}`, 14, 57);
+
+        // Input Table
+        doc.autoTable({
+            startY: 65,
+            head: [['Parameter', 'Tube Side', 'Shell Side']],
+            body: [
+                ['Fluid', document.getElementById('tube_fluid').value, document.getElementById('shell_fluid').value],
+                ['Flow Rate', `${document.getElementById('tube_flow').value} ${document.getElementById('tube_flow_unit').value}`, `${document.getElementById('shell_flow').value} ${document.getElementById('shell_flow_unit').value}`],
+                ['Inlet Temp (°F)', document.getElementById('tube_t_in').value, document.getElementById('shell_t_in').value],
+                ['Inlet Pressure (psig)', document.getElementById('tube_p_in').value, 'N/A'],
+                ['Fouling Resist', document.getElementById('tube_fouling').value, document.getElementById('shell_fouling').value]
+            ],
+            theme: 'grid',
+            headStyles: { fillColor: [31, 41, 55] }
+        });
+
+        // Results Table
+        doc.autoTable({
+            startY: doc.lastAutoTable.finalY + 10,
+            head: [['Performance Result', 'Value', 'Unit']],
+            body: [
+                ['Total Heat Transfer', currentResults.overall?.q_total, 'Btu/h'],
+                ['Tube Outlet Temp', currentResults.tube_side?.t_out, '°F'],
+                ['Shell Outlet Temp', currentResults.shell_side?.t_out, '°F'],
+                ['Tube Pressure Drop', currentResults.tube_side?.dp, 'psi'],
+                ['Shell Pressure Drop', currentResults.shell_side?.dp, 'psi'],
+                ['Condensate Rate', currentResults.overall?.condensate, 'lb/h'],
+                ['Overall HTC', currentResults.overall?.u, 'Btu/h.ft2.R'],
+                ['LMTD', currentResults.overall?.lmtd, '°F'],
+                ['Surface Area', currentResults.overall?.area, 'ft2']
+            ],
+            theme: 'grid',
+            headStyles: { fillColor: [37, 99, 235] }
+        });
+
+        doc.save(`DMI_Datasheet_${model}_${new Date().getTime()}.pdf`);
+    });
+</script>
+</body>
+</html>
