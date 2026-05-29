@@ -1,0 +1,29 @@
+{
+  "name": "dmi-ipac",
+  "version": "1.0.0",
+  "description": "DMI Air Cooled IP Heat Exchanger - web app replacing W1279 WCAC Excel design tool. Client: Diversified Manufacturing Inc (dmimfg.com)",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build:css": "tailwindcss -i src/input.css -o public/styles.css --minify",
+    "watch:css": "tailwindcss -i src/input.css -o public/styles.css --watch",
+    "build": "npm run build:css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markcromwell/dmi-ipac.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/markcromwell/dmi-ipac/issues"
+  },
+  "homepage": "https://github.com/markcromwell/dmi-ipac#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
