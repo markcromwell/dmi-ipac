@@ -1,0 +1,1789 @@
+﻿olevba : Encoding for stdout is only cp1252, will auto-encode text with utf8 before output
+At line:1 char:1
++ olevba "C:\Users\markc\Downloads\W1279 DMI WCAC Design program I0-1.x ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Encoding for st...8 before output:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+olevba 0.60.2 on Python 3.14.0 - http://decalage.info/python/oletools
+===============================================================================
+FILE: C:\Users\markc\Downloads\W1279 DMI WCAC Design program I0-1.xlsm
+Type: OpenXML
+WARNING  For now, VBA stomping cannot be detected for files in memory
+-------------------------------------------------------------------------------
+VBA MACRO ThisWorkbook.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/ThisWorkbook'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+-------------------------------------------------------------------------------
+VBA MACRO Sheet1.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Sheet1'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+-------------------------------------------------------------------------------
+VBA MACRO Sheet2.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Sheet2'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+-------------------------------------------------------------------------------
+VBA MACRO Sheet3.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Sheet3'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+-------------------------------------------------------------------------------
+VBA MACRO Sheet4.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Sheet4'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+-------------------------------------------------------------------------------
+VBA MACRO Sheet5.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Sheet5'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+-------------------------------------------------------------------------------
+VBA MACRO Sheet6.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Sheet6'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+-------------------------------------------------------------------------------
+VBA MACRO Module1.bas 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Module1'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+'-----------------  FLUID PROPERTIES  ------------------------
+
+Public Function rho(Ft, fpar, t)
+'Density, kg/m3
+    Dim Findex As Integer
+    rho = 0
+    Findex = Val(Right(Ft, 2))
+    Select Case Findex
+        Case 1
+        rho = rho_air(fpar, t)
+        Case 2
+        rho = rho_ar(fpar, t)
+        Case 3
+        rho = rho_co2(fpar, t)
+        Case 4
+        rho = rho_co(fpar, t)
+        Case 5
+        rho = rho_he(fpar, t)
+        Case 6
+        rho = rho_h2(fpar, t)
+        Case 7
+        rho = rho_ch4(fpar, t)
+        Case 8
+        rho = rho_n2(fpar, t)
+        Case 9
+        rho = rho_o2(fpar, t)
+        Case 10
+        rho = rho_water(t)
+        Case 11
+        rho = rho_weg(fpar, t)
+        Case 12
+        rho = rho_wpg(fpar, t)
+        Case 13
+        rho = rhosea(t)
+    End Select
+End Function
+
+Public Function Cp(Ft, fpar, t)
+'Specific heat capacity at constant pressure, J/kg.k
+    Dim Findex As Integer
+    Cp = 0
+    Findex = Val(Right(Ft, 2))
+    Select Case Findex
+        Case 1
+        Cp = Cp_air(t)
+        Case 2
+        Cp = Cp_ar(t)
+        Case 3
+        Cp = Cp_co2(t)
+        Case 4
+        Cp = Cp_co(t)
+        Case 5
+        Cp = Cp_he(t)
+        Case 6
+        Cp = Cp_h2(t)
+        Case 7
+        Cp = Cp_ch4(t)
+        Case 8
+        Cp = Cp_n2(t)
+        Case 9
+        Cp = Cp_o2(t)
+        Case 10
+        Cp = Cp_water(t)
+        Case 11
+        Cp = Cp_weg(fpar, t)
+        Case 12
+        Cp = Cp_wpg(fpar, t)
+        Case 13
+        Cp = Cpsea(t)
+    End Select
+End Function
+
+Public Function K(Ft, fpar, t)
+'Thermal conductivity, W/m.K
+    Dim Findex As Integer
+    K = 0
+    Findex = Val(Right(Ft, 2))
+    Select Case Findex
+        Case 1
+        K = K_air(t)
+        Case 2
+        K = K_ar(t)
+        Case 3
+        K = K_co2(t)
+        Case 4
+        K = K_co(t)
+        Case 5
+        K = K_he(t)
+        Case 6
+        K = K_h2(t)
+        Case 7
+        K = K_ch4(t)
+        Case 8
+        K = K_n2(t)
+        Case 9
+        K = K_o2(t)
+        Case 10
+        K = K_water(t)
+        Case 11
+        K = k_weg(fpar, t)
+        Case 12
+        K = k_wpg(fpar, t)
+        Case 13
+        K = ksea(t)
+    End Select
+End Function
+
+Public Function mu(Ft, fpar, t)
+'Dynamic viscosity, kg/m.s
+    Dim Findex As Integer
+    mu = 0
+    Findex = Val(Right(Ft, 2))
+    Select Case Findex
+        Case 1
+        mu = mu_air(t)
+        Case 2
+        mu = mu_ar(t)
+        Case 3
+        mu = mu_co2(t)
+        Case 4
+        mu = mu_co(t)
+        Case 5
+        mu = mu_he(t)
+        Case 6
+        mu = mu_h2(t)
+        Case 7
+        mu = mu_ch4(t)
+        Case 8
+        mu = mu_n2(t)
+        Case 9
+        mu = mu_o2(t)
+        Case 10
+        mu = mu_water(t)
+        Case 11
+        mu = mu_weg(fpar, t)
+        Case 12
+        mu = mu_wpg(fpar, t)
+        Case 13
+        mu = musea(t)
+    End Select
+End Function
+
+Public Function Pr(Ft, fpar, t)
+    Dim Findex As Integer
+    Pr = 0
+    Findex = Val(Right(Ft, 2))
+    Select Case Findex
+        Case 1
+        Pr = Pr_air(t)
+        Case 2
+        Pr = Pr_ar(t)
+        Case 3
+        Pr = Pr_co2(t)
+        Case 4
+        Pr = Pr_co(t)
+        Case 5
+        Pr = Pr_he(t)
+        Case 6
+        Pr = Pr_h2(t)
+        Case 7
+        Pr = Pr_ch4(t)
+        Case 8
+        Pr = Pr_n2(t)
+        Case 9
+        Pr = Pr_o2(t)
+        Case 10
+        Pr = Pr_water(t)
+        Case 11
+        Pr = Pr_weg(fpar, t)
+        Case 12
+        Pr = Pr_wpg(fpar, t)
+        Case 13
+        Pr = Prsea(t)
+    End Select
+End Function
+
+Public Function Mw(Ft)
+'Molecular weight, kg/kmol
+    Dim Findex As Integer
+    Mw = 0
+    Findex = Val(Right(Ft, 2))
+    Select Case Findex
+        Case 1
+        Mw = 28.96
+        Case 2
+        Mw = 39.948
+        Case 3
+        Mw = 44.01
+        Case 4
+        Mw = 28.01
+        Case 5
+        Mw = 4.003
+        Case 6
+        Mw = 2.02
+        Case 7
+        Mw = 16.043
+        Case 8
+        Mw = 28.013
+        Case 9
+        Mw = 31.999
+    End Select
+End Function
+
+'LIQUIDS ******************************************************************
+
+'Water, valid 0.01°C to 300°C (data from Rogers & Mayhew)
+
+Public Function rho_water(t)
+    If t <= 120 Then
+        rho_water = 1000 + 0.0095578 * t - 0.0056262 * t ^ 2 + 0.000013354 * t ^ 3
+    Else
+        rho_water = 792.97 + 4.3331 * t - 0.038282 * t ^ 2 + 0.00012268 * t ^ 3 - 0.0000001539 * t ^ 4
+    End If
+End Function
+
+Public Function Cp_water(t)
+    If t <= 25.15 Then
+        Cp_water = 4221.7 - 4.263 * t + 0.15911 * t ^ 2 - 0.0021464 * t ^ 3
+    End If
+    If t > 25.15 And t <= 44.89 Then
+        Cp_water = 4213.2 - 1.9994 * t + 0.028563 * t ^ 2
+    End If
+    If t > 44.89 And t <= 120 Then
+        Cp_water = 4198.6 - 0.91885 * t + 0.012116 * t ^ 2 - 0.000008545 * t ^ 3
+    End If
+    If t > 120 Then
+        Cp_water = 3091.8 + 19.231 * t - 0.11065 * t ^ 2 + 0.00024882 * t ^ 3
+    End If
+End Function
+
+Public Function K_water(t)
+    If t <= 120 Then
+        K_water = 0.5688 + 0.0018959 * t - 0.000008626 * t ^ 2 + 0.0000000086192 * t ^ 3
+    Else
+        K_water = (595.23 + 1.3658 * t - 0.0048449 * t ^ 2 - 0.0000016765 * t ^ 3 + 0.0000000021291 * t ^ 4) * 0.001
+    End If
+End Function
+
+Public Function mu_water(t)
+    If t <= 120 Then
+        mu_water = 0.0017487 - 0.000053635 * t + 0.0000010181 * t ^ 2 - 0.000000011676 * t ^ 3 + 0.000000000071805 * t ^ 4 - 1.7918E-13 * t ^ 5
+    Else
+        mu_water = (769.87 - 8.1453 * t + 0.040941 * t ^ 2 - 0.000099534 * t ^ 3 + 0.000000094652 * t ^ 4) * 0.000001
+    End If
+End Function
+
+Public Function Pr_water(t)
+    If t <= 47.16 Then
+        Pr_water = 12.96 - 0.4528 * t + 0.0098052 * t ^ 2 - 0.00012467 * t ^ 3 + 0.00000068414 * t ^ 4
+    End If
+    If t > 47.16 And t <= 120 Then
+        Pr_water = 10.3552 - 0.2379 * t + 0.0027172 * t ^ 2 - 0.000015588 * t ^ 3 + 0.000000035778 * t ^ 4
+    End If
+    If t > 120 Then
+        Pr_water = 4.9209 - 0.054892 * t + 0.00029412 * t ^ 2 - 0.00000076479 * t ^ 3 + 0.00000000082274 * t ^ 4
+    End If
+End Function
+
+Public Function Pswater(t)
+'IAPWS-IF97 (2012) equations to define saturation pressure.  valid from 0°C to 373.946°C.
+'t in °C, Ps in Pa.
+'Checked 170425
+    Dim A, B, C, xi As Double
+    Pswater = 0
+    If t > 0 And t < 373.946 Then
+        xi = (273.15 + t) - 0.23855557567849 / (273.15 + t - 650.17534844798)
+        A = xi ^ 2 + 1167.0521452767 * xi - 724213.16703206
+        B = -17.073846940092 * xi ^ 2 + 12020.82470247 * xi - 3232555.0322333
+        C = 14.91510861353 * xi ^ 2 - 4823.2657361591 * xi + 405113.40542057
+        Pswater = 10 ^ 5 * 10 * (2 * C / (-B + (B ^ 2 - 4 * A * C) ^ 0.5)) ^ 4
+    End If
+End Function
+
+Public Function Cpgwater(t)
+'In J/kg.K for saturated water vapour 0.01°C to 300°C
+        Cpgwater = Exp(7.533 - 0.0001017 * t + 0.000005191 * t ^ 2 + 0.00000003669 * t ^ 3 - 0.00000000003143 * t ^ 4)
+End Function
+
+Public Function hgwater(t)
+'In J/kg for saturated water vapour 0.01°C to 300°C
+    hgwater = 2503000 + 1660 * t + 2.465 * t ^ 2 - 0.01745 * t ^ 3
+End Function
+
+Public Function hfwater(t)
+'In J/kg for saturated water 0.01°C to 300°C
+    If t < 10 Then
+        hfwater = 4166.81 * t - 41.66
+    Else
+        hfwater = -1263 + 4306 * t - 1.785 * t ^ 2 + 0.007925 * t ^ 3
+    End If
+End Function
+
+'Water + Ethylene Glycol
+
+Public Function tmin_weg(phi)
+'Ethylene glycol solution minimum temperature for curve fit, 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60%
+    Dim i As Integer
+    A = Array(-5, -10, -20, -35, -35)
+    i = Int(phi / 10) - 2
+    tmin_weg = A(i)
+End Function
+
+Public Function rho_weg(phi, t)
+'Ethylene glycol solution density (kg/m3) from curve fits of 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60% and temperatures up to 125°C
+    Dim p1, p2 As Double
+    Dim i, phimin As Integer
+    A = Array(1035.7, 1051.8, 1066.8, 1081.1, 1094.6, 1094.6)
+    B = Array(-0.24864, -0.27774, -0.30738, -0.33814, -0.36982, -0.36982)
+    C = Array(-0.002432, -0.0024316, -0.0024322, -0.0024322, -0.0024325, -0.0024325)
+    phimin = 10 * Int(phi / 10)
+    i = phimin / 10 - 2
+    p1 = A(i) + B(i) * t + C(i) * t ^ 2
+    p2 = A(i + 1) + B(i + 1) * t + C(i + 1) * t ^ 2
+    rho_weg = (p1 - p2) / 10 * (phimin - phi) + p1
+End Function
+
+Public Function Cp_weg(phi, t)
+'Ethylene glycol solution specific heat (J/kg.K) from curve fits of 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60% and temperatures up to 125°C
+    Dim p1, p2 As Double
+    Dim i, phimin As Integer
+    A = Array(3768.7, 3588.6, 3401, 3203.4, 2996.6, 2996.6)
+    B = Array(2.3, 2.8367, 3.3556, 3.8616, 4.3656, 4.3656)
+    phimin = 10 * Int(phi / 10)
+    i = phimin / 10 - 2
+    p1 = A(i) + B(i) * t
+    p2 = A(i + 1) + B(i + 1) * t
+    Cp_weg = (p1 - p2) / 10 * (phimin - phi) + p1
+End Function
+
+Public Function k_weg(phi, t)
+'Ethylene glycol solution thermal conductivity (W/m.K) from curve fits of 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60% and temperatures up to 125°C
+    Dim p1, p2 As Double
+    Dim i, phimin As Integer
+    A = Array(0.46537, 0.42323, 0.38634, 0.35235, 0.32248, 0.32248)
+    B = Array(0.0014692, 0.0012086, 0.00096925, 0.00075705, 0.00059195, 0.00059195)
+    C = Array(-0.0000066581, -0.0000052883, -0.000004135, -0.0000027201, -0.0000021225, -0.0000021225)
+    D = Array(0.0000000035498, 0.0000000015871, 0.00000000040636, -0.0000000035095, -0.0000000029294, -0.0000000029294)
+    phimin = 10 * Int(phi / 10)
+    i = phimin / 10 - 2
+    p1 = A(i) + B(i) * t + C(i) * t ^ 2 + D(i) * t ^ 3
+    p2 = A(i + 1) + B(i + 1) * t + C(i + 1) * t ^ 2 + D(i + 1) * t ^ 3
+    k_weg = (p1 - p2) / 10 * (phimin - phi) + p1
+End Function
+
+Public Function mu_weg(phi, t)
+'Ethylene glycol solution dynamic viscosity (Pa.s) from curve fits of 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60% and temperatures up to 125°C
+    Dim p1, p2 As Double
+    Dim i, phimin As Integer
+    A = Array(0.48066, 0.61817, 0.76569, 0.90592, 1.081, 1.081)
+    B = Array(-0.015396, -0.015999, -0.017365, -0.018112, -0.019919, -0.019919)
+    C = Array(0.00012696, 0.00012626, 0.00015893, 0.00015788, 0.00012939, 0.00012939)
+    D = Array(-0.0000007509, -0.0000010258, -0.0000015288, -0.0000016299, -0.00000067045, -0.00000067045)
+    e = Array(0.0000000013354, 0.0000000058645, 0.0000000093007, 0.000000011197, 0.000000001735, 0.000000001735)
+    f = Array(3.7932E-12, -0.000000000015174, -0.000000000023904, -0.000000000031769, 0, 0)
+    phimin = 10 * Int(phi / 10)
+    i = phimin / 10 - 2
+    p1 = 0.001 * 10 ^ (A(i) + B(i) * t + C(i) * t ^ 2 + D(i) * t ^ 3 + e(i) * t ^ 4 + f(i) * t ^ 5)
+    p2 = 0.001 * 10 ^ (A(i + 1) + B(i + 1) * t + C(i + 1) * t ^ 2 + D(i + 1) * t ^ 3 + e(i + 1) * t ^ 4 + f(i + 1) * t ^ 5)
+    mu_weg = (p1 - p2) / 10 * (phimin - phi) + p1
+End Function
+
+Public Function Pr_weg(phi, t)
+    Pr_weg = Cp_weg(phi, t) * mu_weg(phi, t) / k_weg(phi, t)
+End Function
+
+'Water + Propylene Glycol
+
+Public Function tmin_wpg(phi)
+'Propylene glycol solution minimum temperature for curve fit, 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60%
+    Dim i As Integer
+    A = Array(-5, -10, -15, -25, -35)
+    i = Int(phi / 10) - 2
+    tmin_wpg = A(i)
+End Function
+
+Public Function rho_wpg(phi, t)
+'Propylene glycol solution density (kg/m3) from curve fits of 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60% and temperatures up to 120°C
+    Dim p1, p2 As Double
+    Dim i, phimin As Integer
+    A = Array(1025.8, 1036.2, 1045.1, 1052.7, 1059, 1059)
+    B = Array(-0.28997, -0.3434, -0.39263, -0.44037, -0.48682, -0.48682)
+    C = Array(-0.0025219, -0.0025508, -0.0025719, -0.002567, -0.0025332, -0.0025332)
+    phimin = 10 * Int(phi / 10)
+    i = phimin / 10 - 2
+    p1 = A(i) + B(i) * t + C(i) * t ^ 2
+    p2 = A(i + 1) + B(i + 1) * t + C(i + 1) * t ^ 2
+    rho_wpg = (p1 - p2) / 10 * (phimin - phi) + p1
+End Function
+
+Public Function Cp_wpg(phi, t)
+'Propylene glycol solution specific heat (J/kg.K) from curve fits of 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60% and temperatures up to 120°C
+    Dim p1, p2 As Double
+    Dim i, phimin As Integer
+    A = Array(3928.9, 3792.9, 3635.7, 3454.7, 3250.3, 3250.3)
+    B = Array(2.1838, 2.7515, 3.3014, 3.8585, 4.4133, 4.4133)
+    phimin = 10 * Int(phi / 10)
+    i = phimin / 10 - 2
+    p1 = A(i) + B(i) * t
+    p2 = A(i + 1) + B(i + 1) * t
+    Cp_wpg = (p1 - p2) / 10 * (phimin - phi) + p1
+End Function
+
+Public Function k_wpg(phi, t)
+'Propylene glycol solution thermal conductivity (W/m.K) from curve fits of 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60% and temperatures up to 120°C
+    Dim p1, p2 As Double
+    Dim i, phimin As Integer
+    A = Array(0.45613, 0.40923, 0.36646, 0.32714, 0.29116, 0.29116)
+    B = Array(0.0014752, 0.0012111, 0.00098259, 0.00076193, 0.00058192, 0.00058192)
+    C = Array(-0.0000065974, -0.0000052474, -0.0000042594, -0.000003036, -0.0000021872, -0.0000021872)
+    D = Array(0.0000000022672, 0.00000000051086, 0, -0.0000000024418, -0.0000000041292, -0.0000000041292)
+    phimin = 10 * Int(phi / 10)
+    i = phimin / 10 - 2
+    p1 = A(i) + B(i) * t + C(i) * t ^ 2 + D(i) * t ^ 3
+    p2 = A(i + 1) + B(i + 1) * t + C(i + 1) * t ^ 2 + D(i + 1) * t ^ 3
+    k_wpg = (p1 - p2) / 10 * (phimin - phi) + p1
+End Function
+
+Public Function mu_wpg(phi, t)
+'Propylene glycol solution dynamic viscosity (Pa.s) from curve fits of 2021 ASHRAE Handbook data
+'Valid for volume concentration 20%<=c<=60% and temperatures up to 120°C
+    Dim p1, p2 As Double
+    Dim i, phimin As Integer
+    A = Array(0.60746, 0.84959, 1.0908, 1.262, 1.4974, 1.4974)
+    B = Array(-0.017258, -0.02083, -0.025228, -0.02553, -0.028049, -0.028049)
+    C = Array(0.00011735, 0.00014517, 0.000207, 0.00019379, 0.00018028, 0.00018028)
+    D = Array(-0.00000054263, -0.00000061911, -0.0000011071, -0.000001077, -0.0000005914, -0.0000005914)
+    e = Array(0.000000001176, 0.0000000012373, 0.0000000027871, 0.0000000040806, 0.00000000063291, 0.00000000063291)
+    f = Array(0, 0, 0, -0.000000000007841, 0, 0)
+    phimin = 10 * Int(phi / 10)
+    i = phimin / 10 - 2
+    p1 = 0.001 * 10 ^ (A(i) + B(i) * t + C(i) * t ^ 2 + D(i) * t ^ 3 + e(i) * t ^ 4 + f(i) * t ^ 5)
+    p2 = 0.001 * 10 ^ (A(i + 1) + B(i + 1) * t + C(i + 1) * t ^ 2 + D(i + 1) * t ^ 3 + e(i + 1) * t ^ 4 + f(i + 1) * t ^ 5)
+    mu_wpg = (p1 - p2) / 10 * (phimin - phi) + p1
+End Function
+
+Public Function Pr_wpg(phi, t)
+    Pr_wpg = Cp_wpg(phi, t) * mu_wpg(phi, t) / k_wpg(phi, t)
+End Function
+
+'Sea water, 35g/kg salinity, valid 10°C to 120°C (HEDH 1992, ESDU 77024)
+
+Public Function rhosea(t)
+    rhosea = 1028.8 - 0.1789 * t - 2.637 * 10 ^ -3 * t ^ 2
+End Function
+
+Public Function Cpsea(t)
+    Cpsea = 3992 - 5.033 * 10 ^ -2 * t + 6.071 * 10 ^ -3 * t ^ 2
+End Function
+
+Public Function ksea(t)
+    ksea = 0.5667 + 1.775 * 10 ^ -3 * t - 6.504 * 10 ^ -6 * t ^ 2
+End Function
+
+Public Function musea(t)
+    musea = (0.9716 + 2.268 * Log(t) / Log(10) - 2.401 * (Log(t) / Log(10)) ^ 2 + 0.551 * (Log(t) / Log(10)) ^ 3) * 10 ^ -3
+End Function
+
+Public Function Prsea(t)
+    Prsea = 13.09 - 0.4026 * t + 6.317 * 10 ^ -3 * t ^ 2 - 4.784 * 10 ^ -5 * t ^ 3 + 1.386 * 10 ^ -7 * t ^ 4
+End Function
+
+
+'GASES *********************************************************************
+
+'Air, valid -100°C to 425°C low pressure (data from Rogers & Mayhew)
+
+Public Function rho_air(p, t)
+    rho_air = p * 10 ^ 5 / (8314.4 / Mw("g-01") * (273.15 + t))
+End Function
+
+Public Function Cp_air(t)
+    Cp_air = 1003.716 + 0.035384 * t + 0.00028394 * t ^ 2 + 0.00000049078 * t ^ 3 - 0.0000000010188 * t ^ 4
+End Function
+
+Public Function K_air(t)
+    K_air = 0.024131 + 0.000079649 * t - 0.000000038441 * t ^ 2 + 0.000000000015891 * t ^ 3
+End Function
+
+Public Function mu_air(t)
+    mu_air = 0.000017161 + 0.000000049069 * t - 0.000000000042916 * t ^ 2 + 5.1084E-14 * t ^ 3 - 3.5316E-17 * t ^ 4
+End Function
+
+Public Function Pr_air(t)
+    Pr_air = 0.7137 - 0.00026517 * t + 0.0000005083 * t ^ 2 + 0.00000000026031 * t ^ 3 - 8.8693E-13 * t ^ 4
+End Function
+
+
+'Argon, valid -0°C to 1200°C low pressure (data from HEDH)
+
+Public Function rho_ar(p, t)
+    rho_ar = p * 10 ^ 5 / (8314.4 / Mw("g-02") * (273.15 + t))
+End Function
+
+Public Function Cp_ar(t)
+    Cp_ar = 521
+End Function
+
+Public Function K_ar(t)
+    K_ar = 0.01641 + 5.153 * 10 ^ -5 * t - 2.818 * 10 ^ -8 * t ^ 2 + 1.095 * 10 ^ -11 * t ^ 3
+End Function
+
+Public Function mu_ar(t)
+    mu_ar = (21.13 + 0.06284 * t - 2.855 * 10 ^ -5 * t ^ 2 + 9.442 * 10 ^ -9 * t ^ 3) * 10 ^ -6
+End Function
+
+Public Function Pr_ar(t)
+    Pr_ar = Cp_ar(t) * mu_ar(t) / K_ar(t)
+End Function
+
+
+'Carbon dioxide, valid 0°C to 1200°C low pressure (data from HEDH)
+
+Public Function rho_co2(p, t)
+    rho_co2 = p * 10 ^ 5 / (8314.4 / Mw("g-03") * (273.15 + t))
+End Function
+
+Public Function Cp_co2(t)
+    Cp_co2 = 819.9 + 1.001 * t - 7.455 * 10 ^ -4 * t ^ 2 + 2.15 * 10 ^ -7 * t ^ 3
+End Function
+
+Public Function K_co2(t)
+    K_co2 = (14.56 + 0.08244 * t + 7.559 * 10 ^ -7 * t ^ 2 - 9.113 * 10 ^ -9 * t ^ 3) * 10 ^ -3
+End Function
+
+Public Function mu_co2(t)
+    mu_co2 = (13.68 + 0.05047 * t - 2.213 * 10 ^ -5 * t ^ 2 + 6.235 * 10 ^ -9 * t ^ 3) * 10 ^ -6
+End Function
+
+Public Function Pr_co2(t)
+    Pr_co2 = Cp_co2(t) * mu_co2(t) / K_co2(t)
+End Function
+
+
+'Carbon monoxide, valid 0°C to 1200°C low pressure (data from HEDH)
+
+Public Function rho_co(p, t)
+    rho_co = p * 10 ^ 5 / (8314.4 / Mw("g-04") * (273.15 + t))
+End Function
+
+Public Function Cp_co(t)
+    Cp_co = 1037 + 0.0761 * t + 3.077 * 10 ^ -4 * t ^ 2 - 1.868 * 10 ^ -7 * t ^ 3
+End Function
+
+Public Function K_co(t)
+    K_co = (22.94 + 0.07273 * t - 8.923 * 10 ^ -6 * t ^ 2) * 10 ^ -3
+End Function
+
+Public Function mu_co(t)
+    mu_co = (16.79 + 0.04506 * t - 1.792 * 10 ^ -5 * t ^ 2 + 4.321 * 10 ^ -9 * t ^ 3) * 10 ^ -6
+End Function
+
+Public Function Pr_co(t)
+    Pr_co = Cp_co(t) * mu_co(t) / K_co(t)
+End Function
+
+
+'Helium, valid -150°C to 1200°C low pressure (data from HEDH)
+
+Public Function rho_he(p, t)
+    rho_he = p * 10 ^ 5 / (8314.4 / Mw("g-05") * (273.15 + t))
+End Function
+
+Public Function Cp_he(t)
+    Cp_he = 5200
+End Function
+
+Public Function K_he(t)
+    K_he = (144.3 + 0.3812 * t - 0.0001696 * t ^ 2 + 6.975 * 10 ^ -8 * t ^ 3) * 10 ^ -3
+End Function
+
+Public Function mu_he(t)
+    mu_he = (18.54 + 0.04708 * t - 1.728 * 10 ^ -5 * t ^ 2 + 6.095 * 10 ^ -9 * t ^ 3) * 10 ^ -6
+End Function
+
+Public Function Pr_he(t)
+    Pr_he = Cp_he(t) * mu_he(t) / K_he(t)
+End Function
+
+
+'Hydrogen, valid 0°C to 1200°C low pressure (data from HEDH)
+
+Public Function rho_h2(p, t)
+    rho_h2 = p * 10 ^ 5 / (8314.4 / Mw("g-06") * (273.15 + t))
+End Function
+
+Public Function Cp_h2(t)
+    Cp_h2 = 14210 + 2.57 * t - 0.007258 * t ^ 2 + 9.736 * 10 ^ -6 * t ^ 3 - 3.728 * 10 ^ -9 * t ^ 4
+End Function
+
+Public Function K_h2(t)
+    K_h2 = 0.1673 + 0.000514 * t - 3.06 * 10 ^ -7 * t ^ 2 + 1.768 * 10 ^ -10 * t ^ 3
+End Function
+
+Public Function mu_h2(t)
+    mu_h2 = (8.5 + 0.01805 * t - 2.423 * 10 ^ -6 * t ^ 2) * 10 ^ -6
+End Function
+
+Public Function Pr_h2(t)
+    Pr_h2 = Cp_h2(t) * mu_h2(t) / K_h2(t)
+End Function
+
+
+'Methane, valid 0°C to 1200°C low pressure (data from HEDH)
+
+Public Function rho_ch4(p, t)
+    rho_ch4 = p * 10 ^ 5 / (8314.4 / Mw("g-07") * (273.15 + t))
+End Function
+
+Public Function Cp_ch4(t)
+    Cp_ch4 = 2135 + 3.492 * t + 1.287 * 10 ^ -7 * t ^ 2 - 6.671 * 10 ^ -10 * t ^ 3
+End Function
+
+Public Function K_ch4(t)
+    K_ch4 = (31.01 + 0.1463 * t + 9.642 * 10 ^ -5 * t ^ 2 - 4.974 * 10 ^ -8 * t ^ 3) * 10 ^ -3
+End Function
+
+Public Function mu_ch4(t)
+    mu_ch4 = (10.26 + 0.03108 * t - 1.319 * 10 ^ -5 * t ^ 2 + 3.976 * 10 ^ -9 * t ^ 3) * 10 ^ -6
+End Function
+
+Public Function Pr_ch4(t)
+    Pr_ch4 = Cp_ch4(t) * mu_ch4(t) / K_ch4(t)
+End Function
+
+
+'Nitrogen, valid 0°C to 1200°C low pressure (data from HEDH)
+
+Public Function rho_n2(p, t)
+    rho_n2 = p * 10 ^ 5 / (8314.4 / Mw("g-08") * (273.15 + t))
+End Function
+
+Public Function Cp_n2(t)
+    Cp_n2 = 1038 + 0.01388 * t + 3.736 * 10 ^ -4 * t ^ 2 - 2.073 * 10 ^ -7 * t ^ 3
+End Function
+
+Public Function K_n2(t)
+    K_n2 = (24.12 + 0.0688 * t - 6.378 * 10 ^ -6 * t ^ 2) * 10 ^ -3
+End Function
+
+Public Function mu_n2(t)
+    mu_n2 = (17.02 + 0.04023 * t - 8.685 * 10 ^ -6 * t ^ 2) * 10 ^ -6
+End Function
+
+Public Function Pr_n2(t)
+    Pr_n2 = Cp_n2(t) * mu_n2(t) / K_n2(t)
+End Function
+
+
+'Oxygen, valid 0°C to 1200°C low pressure (data from HEDH)
+
+Public Function rho_o2(p, t)
+    rho_o2 = p * 10 ^ 5 / (8314.4 / Mw("g-09") * (273.15 + t))
+End Function
+
+Public Function Cp_o2(t)
+    Cp_o2 = 910.7 + 0.2865 * t - 1.119 * 10 ^ -5 * t ^ 2 - 5.787 * 10 ^ -8 * t ^ 3
+End Function
+
+Public Function K_o2(t)
+    K_o2 = (24.5 + 0.08377 * t - 1.341 * 10 ^ -5 * t ^ 2) * 10 ^ -3
+End Function
+
+Public Function mu_o2(t)
+    mu_o2 = (19.75 + 0.04735 * t - 9.637 * 10 ^ -6 * t ^ 2) * 10 ^ -6
+End Function
+
+Public Function Pr_o2(t)
+    Pr_o2 = Cp_o2(t) * mu_o2(t) / K_o2(t)
+End Function
+
+-------------------------------------------------------------------------------
+VBA MACRO Module2.bas 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Module2'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+'-----------------  SURFACE PERFORMANCE DATA  ------------------------
+
+Public Function h_tube(Re, Dto, Dti, L, tm, tw, Ft, fpar, kappa, tubetyp, config, condition)
+'Calculate tube side heat transfer coefficient, referred to tube OD
+    Dim fpcorr, nfp As Double
+    If Left(Ft, 1) = "g" Then
+        If config = 1 Then
+            nfp = 0.47
+        Else
+            nfp = 0
+        End If
+        fpcorr = ((273.15 + tm) / (273.15 + tw)) ^ nfp
+    Else
+        If config = 1 Then
+            nfp = 0.11
+        Else
+            nfp = 0.25
+        End If
+        fpcorr = (mu(Ft, fpar, tm) / mu(Ft, fpar, tw)) ^ nfp
+    End If
+    If Left(tubetyp, 1) = "P" Then
+        h_tube = K(Ft, fpar, tm) / Dto * Nu_plaintube(Re, fcp_plaintube(Re, L, Dti, kappa), Pr(Ft, fpar, tm), L, Dti, fpcorr)
+        If condition = "wet" Then h_tube = h_tube * 10 ^ (0.1102 - 1.367 * 10 ^ -7 * Re)
+    Else
+        'For grooved tube.  From tabulated data in Wcool ACTUBE file for 6800<Re<157700
+        If condition = "dry" Then
+            h_tube = K(Ft, fpar, tm) / Dto * ((0.007905 * Re ^ 0.9537) ^ 80 + (0.04427 * Re ^ 0.8) ^ 80) ^ (1 / 80) * Pr(Ft, fpar, tm) ^ 0.3 'Dry coefficient
+        Else
+            h_tube = K(Ft, fpar, tm) / Dto * ((0.01198 * Re ^ 0.9384) ^ 80 + (0.07627 * Re ^ 0.7723) ^ 80) ^ (1 / 80) * Pr(Ft, fpar, tm) ^ 0.3 'Wet coefficient, used to determine tube surface temperatures when dehumidifying
+        End If
+    End If
+End Function
+
+Public Function f_tube(Re, L, Dti, kappa, Ft, fpar, tm, tw, tubetyp, config)
+'Calculates tube side friction factor corrected for bulk:surface temperature difference
+    Dim cfp_corr, f, m As Double
+    If Left(tubetyp, 1) = "P" Then
+        If Left(Ft, 1) = "g" Then
+            If Re >= 4000 Then
+                m = -0.1
+            Else
+                If config = -1 Then
+                    m = 0.81
+                Else
+                    m = 0
+                End If
+            End If
+            cfp_corr = ((273.15 + tw) / (273.15 + tm)) ^ m
+        Else
+            If Re >= 4000 Then
+                If config = -1 Then
+                    m = 0.24
+                Else
+                    m = 0.25
+                End If
+            Else
+                If config = -1 Then
+                    m = 0.54
+                Else
+                    m = 0.58
+                End If
+            End If
+            cfp_corr = (mu(Ft, fpar, tw) / mu(Ft, fpar, tm)) ^ m
+        End If
+    Else
+        cfp_corr = 1
+    End If
+    If Left(tubetyp, 1) = "P" Then
+        f = fcp_plaintube(Re, L, Dti, kappa) * cfp_corr
+    Else
+        'For grooved tube.  From tabulated data in Wcool ACTUBE file for 6800<Re<157700
+        f = 0.2478 * Re ^ -0.135
+    End If
+    f_tube = Array(f, cfp_corr)
+End Function
+
+Public Function fcp_plaintube(Re, L, D, kappa)
+'Thermatec function for plain tube constant fluid property Fanning friction factor
+    Dim blend, fdelta, flam, ftrans, fturb, fturbA, fturbB, fturbC, xcross As Double
+    Static C, fRe, K As Single
+    fRe = 16
+    K = 1.25
+    C = 0.00021
+    xcross = L / (D * Re)
+    flam = 1 / Re * (3.44 / xcross ^ 0.5 + (K / (4 * xcross) + fRe - 3.44 * xcross ^ -0.5) / (1 + C * xcross ^ -2))
+    If Re > 100 Then
+        fturbA = -2 * Log(kappa / (3.7 * D) + 12 / Re) / Log(10)
+        fturbB = -2 * Log(kappa / (3.7 * D) + 2.51 * fturbA / Re) / Log(10)
+        fturbC = -2 * Log(kappa / (3.7 * D) + 2.51 * fturbB / Re) / Log(10)
+        fturb = (0.065 * D / (4 * L)) + 0.25 * (fturbA - (fturbB - fturbA) ^ 2 / (fturbC - 2 * fturbB + fturbA)) ^ -2
+    Else
+        fturb = 0
+    End If
+    If L / (2500 * D) > 0.01 Then
+        blend = (1 - ((xcross - 0.01) / (L / (D * 2500) - 0.01)) ^ 3)
+        If blend < 0 Then
+            blend = 0
+        End If
+    Else
+        blend = 0
+    End If
+    fdelta = fturb - flam
+    If fdelta < 0 Then
+        fdelta = 0
+    End If
+    ftrans = flam + fdelta * blend ^ 6
+    If xcross > 0.01 Then
+        fcp_plaintube = ftrans
+    Else
+        If fturb > flam Then
+            fcp_plaintube = fturb
+        Else
+            fcp_plaintube = flam
+        End If
+    End If
+End Function
+
+Public Function Nu_plaintube(Re, f, Pr, L, D, fpcorr)
+'Thermatec function for plain tube Nusselt number
+    Dim Nuhighturb, Nulam, Nulowturb, Nutrans, Nuturb, Nuturbcorr As Double
+    Static Nufd, Pi As Single
+    Pi = 3.141592654
+    Nufd = 3.66
+    Nulowturb = Exp(-3.796 + 0.795 * Log(Re) + 0.495 * Log(Pr) - 0.0225 * (Log(Pr)) ^ 2)
+    Nuhighturb = (f / 2 * (Re - 1000) * Pr) / (1 + 12.7 * (f / 2) ^ 0.5 * (Pr ^ (2 / 3) - 1))
+    If Nulowturb > Nuhighturb Then
+        Nuturb = Nulowturb
+    Else
+        Nuturb = Nuhighturb
+    End If
+    If Re > 2300 Then
+        Nulam = Nufd + 0.0677 * (2300 * Pr * D / L) ^ 1.33 / (1 + 0.1 * Pr * (2300 * D / L) ^ 0.3)
+    Else
+        Nulam = Nufd + 0.0677 * (Re * Pr * D / L) ^ 1.33 / (1 + 0.1 * Pr * (Re * D / L) ^ 0.3)
+    End If
+    Nutrans = Nulam * Exp((Re - 2200) / 730)
+    Nuturbcorr = Nuturb * fpcorr
+    Nu_plaintube = (Nulam ^ 10 + (Nutrans ^ -2 + Nuturbcorr ^ -2) ^ -5) ^ 0.1
+End Function
+
+Public Function f_shell(Re, D, Xt, pattern)
+'Calculates shell side Fanning friction factor for tiangular tube layouts based on Bell/Taborek
+    Dim b1, b2 As Double
+    f_shell = "Out tube diameter range"
+    If D >= 0.005 And D < 0.055 Then
+        Select Case pattern
+            Case "RS"
+                If Re < 10 Then
+                    b1 = 32
+                    b2 = -1
+                End If
+                If Re >= 10 And Re < 100 Then
+                    b1 = 26.2
+                    b2 = -0.913
+                End If
+                If Re >= 100 And Re < 1000 Then
+                    b1 = 3.5
+                    b2 = -0.476
+                End If
+                If Re >= 1000 And Re < 10000 Then
+                    b1 = 0.333
+                    b2 = -0.136
+                End If
+                If Re >= 10000 Then
+                    b1 = 0.303
+                    b2 = -0.126
+                End If
+                f_shell = b1 * (1.33 * D / (0.7071 * Xt)) ^ (6.59 / (1 + 0.14 * Re ^ 0.52)) * Re ^ b2
+            Case "S"
+                If Re < 10 Then
+                    b1 = 35
+                    b2 = -1
+                End If
+                If Re >= 10 And Re < 100 Then
+                    b1 = 32.1
+                    b2 = -0.963
+                End If
+                If Re >= 100 And Re < 1000 Then
+                    b1 = 6.09
+                    b2 = -0.602
+                End If
+                If Re >= 1000 And Re < 10000 Then
+                    b1 = 0.0815
+                    b2 = 0.022
+                End If
+                If Re >= 10000 Then
+                    b1 = 0.391
+                    b2 = -0.148
+                End If
+                f_shell = b1 * (1.33 * D / Xt) ^ (6.3 / (1 + 0.14 * Re ^ 0.378)) * Re ^ b2
+            Case "T"
+                If Re < 10 Then
+                    b1 = 48
+                    b2 = -1
+                End If
+                If Re >= 10 And Re < 100 Then
+                    b1 = 45.1
+                    b2 = -0.973
+                End If
+                If Re >= 100 And Re < 1000 Then
+                    b1 = 4.57
+                    b2 = -0.476
+                End If
+                If Re >= 1000 And Re < 10000 Then
+                    b1 = 0.486
+                    b2 = -0.152
+                End If
+                If Re >= 10000 Then
+                    b1 = 0.372
+                    b2 = -0.123
+                End If
+                f_shell = b1 * (1.33 * D / Xt) ^ (7 / (1 + 0.14 * Re ^ 0.5)) * Re ^ b2
+        End Select
+    End If
+End Function
+
+Public Function j_shell(Re, D, Xt, pattern)
+'Calculates shell side Colburn j factor for tiangular tube layouts based on Bell/Taborek
+    Dim a1, a2 As Single
+    j_shell = "Out of tube diameter range"
+    If D >= 0.005 And D < 0.055 Then
+        Select Case pattern
+            Case "RS"
+                If Re < 10 Then
+                    a1 = 1.55
+                    a2 = -0.667
+                End If
+                If Re >= 10 And Re < 100 Then
+                    a1 = 1.498
+                    a2 = -0.656
+                End If
+                If Re >= 100 And Re < 1000 Then
+                    a1 = 0.73
+                    a2 = -0.5
+                End If
+                If Re >= 1000 Then
+                    a1 = 0.37
+                    a2 = -0.396
+                End If
+                j_shell = a1 * (1.33 * D / (0.7071 * Xt)) ^ (1.93 / (1 + 0.14 * Re ^ 0.5)) * Re ^ a2
+            Case "S"
+                If Re < 10 Then
+                    a1 = 0.97
+                    a2 = -0.667
+                End If
+                If Re >= 10 And Re < 100 Then
+                    a1 = 0.9
+                    a2 = -0.631
+                End If
+                If Re >= 100 And Re < 1000 Then
+                    a1 = 0.408
+                    a2 = -0.46
+                End If
+                If Re >= 1000 And Re < 10000 Then
+                    a1 = 0.107
+                    a2 = -0.266
+                End If
+                If Re >= 10000 Then
+                    a1 = 0.37
+                    a2 = -0.395
+                End If
+                j_shell = a1 * (1.33 * D / Xt) ^ (1.187 / (1 + 0.14 * Re ^ 0.37)) * Re ^ a2
+            Case "T"
+                If Re < 10 Then
+                    a1 = 1.4
+                    a2 = -0.667
+                End If
+                If Re >= 10 And Re < 100 Then
+                    a1 = 1.36
+                    a2 = -0.657
+                End If
+                If Re >= 100 And Re < 1000 Then
+                    a1 = 0.593
+                    a2 = -0.477
+                End If
+                If Re >= 1000 Then
+                    a1 = 0.321
+                    a2 = -0.388
+                End If
+                j_shell = a1 * (1.33 * D / Xt) ^ (1.45 / (1 + 0.14 * Re ^ 0.519)) * Re ^ a2
+        End Select
+    End If
+End Function
+
+Public Function KcKe(Re, D, L, sigma)
+'Thermatec function to calculates Kc & Ke by interpolation of points from K&L Figure 5-2 (mulitple round channels)
+'for 0.2<=sigma<=0.54, which covers common tube sizes with 1.25<P/D<1.5 in an equilaterial triangular pattern
+Dim index1, index2, Re_ind, sigma_ind, xplus_ind As Integer
+Dim Kc, Ke, kc1, kc2, ke1, ke2 As Double
+    xplus_opt = Array(20, 0.2, 0.1, 0.05)
+    Re_opt = Array(3000, 5000, 10000, 1000000)
+    sigma_opt = Array(0.2, 0.37, 0.54)
+    kc_opt = Array(0.994, 0.983, 0.926, 0.8, 0.456, 0.443, 0.426, 0.329, 0.925, 0.912, 0.858, 0.734, 0.385, 0.371, 0.356, 0.259, 0.857, 0.843, 0.792, 0.666, 0.32, 0.305, 0.288, 0.193)
+    ke_opt = Array(0.517, 0.517, 0.517, 0.554, 0.614, 0.614, 0.629, 0.643, 0.158, 0.158, 0.183, 0.232, 0.357, 0.357, 0.37, 0.406, -0.143, -0.134, -0.105, -0.039, 0.151, 0.159, 0.167, 0.209)
+    sigma_ind = 1
+    While sigma < sigma_opt(sigma_ind) And sigma_ind > 0
+        sigma_ind = sigma_ind - 1
+    Wend
+    Re_ind = 2
+    While Re < Re_opt(Re_ind) And Re_ind > 0
+        Re_ind = Re_ind - 1
+    Wend
+    xplus_ind = 2
+    While 4 * L / (D * Re) >= xplus_opt(xplus_ind) And xplus_ind > 0
+        xplus_ind = xplus_ind - 1
+    Wend
+    If Re < 3000 Then
+        index1 = xplus_ind + 8 * sigma_ind
+        index2 = xplus_ind + 8 * (sigma_ind + 1)
+        If 4 * L / (D * Re) <= 20 And 4 * L / (D * Re) >= 0.05 Then
+            kc1 = (kc_opt(index1) - kc_opt(index1 + 1)) / (xplus_opt(xplus_ind) - xplus_opt(xplus_ind + 1)) * (4 * L / (D * Re) - xplus_opt(xplus_ind + 1)) + kc_opt(index1 + 1)
+            kc2 = (kc_opt(index2) - kc_opt(index2 + 1)) / (xplus_opt(xplus_ind) - xplus_opt(xplus_ind + 1)) * (4 * L / (D * Re) - xplus_opt(xplus_ind + 1)) + kc_opt(index2 + 1)
+            ke1 = (ke_opt(index1) - ke_opt(index1 + 1)) / (xplus_opt(xplus_ind) - xplus_opt(xplus_ind + 1)) * (4 * L / (D * Re) - xplus_opt(xplus_ind + 1)) + ke_opt(index1 + 1)
+            ke2 = (ke_opt(index2) - ke_opt(index2 + 1)) / (xplus_opt(xplus_ind) - xplus_opt(xplus_ind + 1)) * (4 * L / (D * Re) - xplus_opt(xplus_ind + 1)) + ke_opt(index2 + 1)
+        Else
+            If 4 * L / (D * Re) > 20 Then
+                kc1 = kc_opt(index1)
+                kc2 = kc_opt(index2)
+                ke1 = ke_opt(index1)
+                ke2 = ke_opt(index2)
+            Else
+                kc1 = kc_opt(index1 + 1)
+                kc2 = kc_opt(index2 + 1)
+                ke1 = ke_opt(index1 + 1)
+                ke2 = ke_opt(index2 + 1)
+            End If
+        End If
+    Else
+        index1 = 4 + Re_ind + 8 * sigma_ind
+        index2 = 4 + Re_ind + 8 * (sigma_ind + 1)
+        If Re <= 1000000 Then
+            kc1 = (kc_opt(index1) - kc_opt(index1 + 1)) / (Re_opt(Re_ind + 1) - Re_opt(Re_ind)) * (Re_opt(Re_ind + 1) - Re) + kc_opt(index1 + 1)
+            kc2 = (kc_opt(index2) - kc_opt(index2 + 1)) / (Re_opt(Re_ind + 1) - Re_opt(Re_ind)) * (Re_opt(Re_ind + 1) - Re) + kc_opt(index2 + 1)
+            ke1 = (ke_opt(index1) - ke_opt(index1 + 1)) / (Re_opt(Re_ind + 1) - Re_opt(Re_ind)) * (Re_opt(Re_ind + 1) - Re) + ke_opt(index1 + 1)
+            ke2 = (ke_opt(index2) - ke_opt(index2 + 1)) / (Re_opt(Re_ind + 1) - Re_opt(Re_ind)) * (Re_opt(Re_ind + 1) - Re) + ke_opt(index2 + 1)
+        Else
+            kc1 = kc_opt(index1 + 1)
+            kc2 = kc_opt(index2 + 1)
+            ke1 = ke_opt(index1 + 1)
+            ke2 = ke_opt(index2 + 1)
+        End If
+    End If
+    If sigma >= 0.2 And sigma <= 0.54 Then
+        Kc = (kc1 - kc2) / (sigma_opt(sigma_ind) - sigma_opt(sigma_ind + 1)) * (sigma - sigma_opt(sigma_ind + 1)) + kc2
+        Ke = (ke1 - ke2) / (sigma_opt(sigma_ind) - sigma_opt(sigma_ind + 1)) * (sigma - sigma_opt(sigma_ind + 1)) + ke2
+    Else
+        If sigma > 0.54 Then
+            Kc = kc2
+            Ke = ke2
+        Else
+            Kc = kc1
+            Ke = ke1
+        End If
+    End If
+    KcKe = Array(Kc, Ke)
+End Function
+
+
+-------------------------------------------------------------------------------
+VBA MACRO Module3.bas 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Module3'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+'-----------------  THERMAL PERFORMANCE CALCULATION  ------------------------
+
+Public Function outlet_temp(Ft, fpar, Q, mdot, ti, tomax, dp, omegai, config)
+'Calculates outlet temperature based on dissipation in kW and fluid conditions
+'Config is 1 for heat flow from shell to tubes or -1 for heat flow from tubes to shell
+'When calling this function to calculate shell outlet temperature use the value of config in the function call,
+'but when using the function for tube side outlet temperature use -1*config as the function call.
+    Dim omegao, Qguess, t, tdelta, tlast As Double
+    Dim count1 As Integer
+    count1 = 0
+    t = tomax
+    tlast = ti
+    If Left(Ft, 1) = "l" Then
+        While Abs(t - tlast) > 0.0001 And count1 < 100
+            count1 = count1 + 1
+            tlast = t
+            t = ti - Q * 1000 * config / (mdot * Cp(Ft, fpar, (ti + t) / 2))
+        Wend
+    Else
+        tdelta = ti - t
+        While Abs(t - tlast) > 0.0001 And count1 < 100
+            count1 = count1 + 1
+            tlast = t
+            tdelta = tdelta / 2
+            If t <= 0.01 Then
+                omegao = 0
+            Else
+                'Wcool calculates tube side pressure loss calc here, problem is that method used is very simplistic and not converged for density change
+                'Calling dPsolver from here is problematic as it requires wall temp, therefore pressure loss (dp) is treated as an inlet variable
+                omegao = 18.015 / Mw(Ft) * Pswater(t) / (fpar * 10 ^ 5 - dp * 1000 - Pswater(t))
+                If omegai < omegao Or omegao < 0 Then omegao = omegai
+            End If
+            'Definition changed 25Jun24 to be consistent with Wcool, see RJG email 19Jun24
+            Qguess = mdot / (1 + omegai) * (Cp(Ft, fpar, ti) * ti + omegai * hgwater(ti) - Cp(Ft, fpar, t) * t - omegao * hgwater(t)) * config / 1000
+            If Qguess > Q Then
+                t = t + tdelta
+            Else
+                t = t - tdelta
+            End If
+            If t <= 0.01 Then t = 0.01
+        Wend
+    End If
+    If count1 < 100 Then
+        outlet_temp = t
+    Else
+        outlet_temp = "convergence error"
+    End If
+End Function
+
+Public Function dew_point(Ft, fpar, omega)
+'Calculates gas dew point in °C, fpar in bar(abs)
+    Dim Ps, tdelta As Double
+    Dim count1 As Integer
+    Ps = omega * fpar * 10 ^ 5 / (18.015 / Mw(Ft) + omega)
+    dew_point = 373
+    tdelta = 186.795
+    count1 = 0
+    While Abs(Pswater(dew_point) - Ps) > 1 And count1 < 1000
+        count1 = count1 + 1
+        If Pswater(dew_point) > Ps Then
+            dew_point = dew_point - tdelta
+        Else
+            dew_point = dew_point + tdelta
+        End If
+        tdelta = tdelta / 2
+    Wend
+    If dew_point < 0.01 Or dew_point > 373 Or omega = 0 Then dew_point = -273.15
+End Function
+
+Public Function wetwall_temp(Ft, fpar, omega, Rt, hs, ht, ts, tt)
+'Calculates the wet surface temperature based on method proposed by McQuiston
+    Dim Eb, Ew, omegaw, tdelta, tw As Double
+    Dim count1 As Integer
+    tw = 0.5 * (tt + ts)
+    tdelta = (tt - ts) / 4
+    Eb = (Cp(Ft, fpar, tt) * tt + omega * hgwater(tt)) / (1 + omega) 'Gas bulk enthalpy
+    omegaw = 18.015 / Mw(Ft) * Pswater(tw) / (fpar * 10 ^ 5 - Pswater(tw))
+    Ew = (Cp(Ft, fpar, tw) * tw + omegaw * hgwater(tw)) / (1 + omegaw) 'Gas saturated enthalpy at tube wall
+    count1 = 0
+    While Abs((Rt + hs ^ -1) ^ -1 * (tw - ts) / (ht / Cp(Ft, fpar, tt) * (Eb - Ew)) - 1) > 0.001 And count1 < 100
+        count1 = count1 + 1
+        If (Rt + hs ^ -1) ^ -1 * (tw - ts) > ht / Cp(Ft, fpar, tt) * (Eb - Ew) Then
+            tw = tw - tdelta
+        Else
+            tw = tw + tdelta
+        End If
+        tdelta = tdelta / 2
+        omegaw = 18.015 / Mw(Ft) * Pswater(tw) / (fpar * 10 ^ 5 - Pswater(tw))
+        Ew = Cp(Ft, fpar, tw) * tw + omegaw * hgwater(tw)
+    Wend
+    tsw = (ht / Cp(Ft, fpar, tt) * (Eb - Ew)) / hs + ts
+    wetwall_temp = Array(tw, count1, tsw)
+End Function
+
+Public Function h_shell(Re, tb, tw, D, Xt, jtot, Ft, fpar, config, pattern)
+'Calculates the shell side constant fluid property heat transfer coefficient for triangular pitch layout
+    Dim fpcorr, nfp As Double
+    If Left(Ft, 1) = "g" Then
+        If config = -1 Then
+            nfp = 0.25
+        Else
+            nfp = 0
+        End If
+        fpcorr = ((273.15 + tb) / (273.15 + tw)) ^ nfp
+    Else
+        fpcorr = (mu(Ft, fpar, tb) / mu(Ft, fpar, tw)) ^ 0.14
+    End If
+    h_shell = j_shell(Re, D, Xt, pattern) * Re * Pr(Ft, fpar, tb) ^ (1 / 3) * (K(Ft, fpar, tb) / D) * jtot * fpcorr
+End Function
+
+Public Function Jtotal(Re, Jc, Jl, Abas, Acs, Nss, Ntcc, Ntcw, Nb, Lbe, Lbc)
+'Calculate the total Bell/Taborek shell side heat transfer coefficient correction factor, j.
+    Dim cbh, N As Single
+    Dim Jb, Jb1, Jr, Jrmax, Js As Double
+    If Re >= 100 Then
+        cbh = 1.25
+        N = 0.6
+        Jr = 1
+    Else
+        cbh = 1.35
+        N = 0.333
+        Jrmax = (10 / ((Ntcc + Ntcw) * (Nb + 1))) ^ 0.18
+        If Re <= 20 Then
+            Jr = Jrmax
+        Else
+            Jr = Jrmax + (20 - Re) / 80 * (Jrmax - 1)
+        End If
+    End If
+    Jb1 = Exp(-cbh * Abas / Acs * (1 - (2 * Nss / Ntcc) ^ (1 / 3)))
+    If Jb1 > 1 Then
+        Jb = 1
+    Else
+        Jb = Jb1
+    End If
+    Js = ((Nb - 1) + 2 * (Lbe / Lbc) ^ (1 - N)) / ((Nb - 1) + 2 * (Lbe / Lbc))
+    Jtotal = Jc * Jl * Jb * Jr * Js
+End Function
+
+Public Function Qsolver(tit, tis, config, Ftt, Fts, fpart, fpars, mdots, mdott, omegai, Act, Acs, A, SAM, Rfs, Rft, Dto, Dti, Lt, sigmat, Xt, Jc, Jl, Abas, Nss, Ntcc, Ntcw, Nb, Lbe, Lbc, kappa, Rt, tubetyp, pattern)
+'Funtions to interatively determine actual heat dissipation based on input fluid conditions and geometry
+    Dim Areq, Areqdry, Areqwet, dpt, dptlast, dptSF, E2t, E2tw, Eot, Eotw, Gs, Gt, Gtcor, hs, hsdry, ht, htdry, htmt, jtot, LMED, LMTD, omegao, omega2tw, omegaotw, Qguess, QSF, Res, t2s, t2t, t2tdelta, t2tw, tms, tmt, tos, tot, totdelta, totw, tmsw, tmtw, tmtwdry, tsw_2dry, tsw_inletdry, U As Double
+    Dim count1, count2, count3, dptcount, Qcount, Ucount, Ucount1, Ucount2, Ucount3, wetwallcount, wetwallcount1, wetwallcount2 As Integer
+    Areqdry = 0
+    Areqwet = 0
+    If dew_point(Ftt, fpart, omegai) < tis Then
+        'All dry surface
+        Q_array = QsolverSP(tit, tis, config, Ftt, Fts, fpart, fpars, mdots, mdott, omegai, Act, Acs, A, SAM, Rfs, Rft, Dto, Dti, Lt, Xt, Jc, Jl, Abas, Nss, Ntcc, Ntcw, Nb, Lbe, Lbc, kappa, Rt, tubetyp, pattern)
+        Qguess = Q_array(0)
+        Qcount = Q_array(2)
+        tmtw = Q_array(3)
+        tmsw = Q_array(4)
+        U = Q_array(5)
+        Ucount = Q_array(6)
+        ht = Q_array(7)
+        hs = Q_array(8)
+        dpt = Q_array(9)
+        dptcount = Q_array(10)
+        Areqdry = A
+        htmt = 0
+        LMED = 0
+        tos = outlet_temp(Fts, fpars, Qguess, mdots, tis, tit, 0, 0, config)
+        tsw_inletdry = tos - U / (hs ^ -1 + Rfs) ^ -1 * (tos - tit)
+        tot = outlet_temp(Ftt, fpart, Qguess, mdott, tit, tis, 0, omegai, -1 * config)
+        tsw_2dry = tis - U / (hs ^ -1 + Rfs) ^ -1 * (t - s - tot)
+        wetwall2 = Array(0, 0, 0)
+        wetwallo = Array(0, 0, 0)
+    Else
+        'Initial guess of temp out tube
+        Gt = mdott / Act
+        Gs = mdots / Acs
+        tot = (tis + tit) / 2
+        totdelta = (tit - tis) / 4
+        Areq = A * (1 - 0.01 * SAM) + 1
+        count1 = 0
+        'Iterate to converged solution for tot where sum of required heat transfer areas for single and two phase flows is equal to available area
+        While Abs(Areq / (A * (1 - 0.01 * SAM)) - 1) > 0.001 And count1 < 100
+            count1 = count1 + 1
+            dpt = 0.001 'dpt and dpt last in kPa
+            dptlast = 1.1 * dpt
+            tmtw = (tit + tot) / 2 + config
+            count2 = 0
+            'For guessed tube outlet temp (tot) determine overall dissipation, including pressure loss impact on outlet humidity and bulk:wall temperature gradient.
+            'Then determine shell outlet temp (tos).
+            While Abs(dptlast / dpt - 1) > 0.001 And count2 < 100
+                count2 = count2 + 1
+                dptlast = dpt
+                dpt_array = dPsolver(tit, tot, tmtw, Ftt, fpart, Gt, Dti, Lt, sigmat, omegai, kappa, tubetyp, config)
+                dpt = dpt_array(0)
+                dptcount = dpt_array(2)
+                omegao = dpt_array(7)
+                'Total dissipation for entire tube length using definition used in Wcool.  See RJG email 19Jun24
+                Qguess = mdott / (1 + omegai) * (Cp(Ftt, fpart, tit) * tit + omegai * hgwater(tit) - Cp(Ftt, fpart, tot) * tot - omegao * hgwater(tot)) / 1000
+                tmt = (tit + tot) / 2
+                tos = outlet_temp(Fts, fpars, Qguess, mdots, tis, tit, 0, 0, config)
+                tms = (tis + tos) / 2
+                Res = Gs * Dto / mu(Fts, fpars, tms)
+                jtot = Jtotal(Res, Jc, Jl, Abas, Acs, Nss, Ntcc, Ntcw, Nb, Lbe, Lbc) 'Average jtot applied to single and two phase sections below on basis very little variance and jtot is approximate
+                Gtcor = Gt * (1 + 0.5 * (omegai + omegao)) / (1 + omegai) 'tube side mass velocity corrected to be consistent with Wcool the pressure loss is based on the average mass flow of gas + water vapour
+                tubewalltemps = tubewall(tms, tmt, Gtcor, Res, Dto, Dti, Xt, Lt, jtot, Rt, Ftt, Fts, fpart, fpars, Rfs, Rft, kappa, tubetyp, config, "wet", pattern) 'wet/dry condition is a simplying assumption for plain tube calculations, to enable approximate bulk:wall temperature gradient correction
+                tmtw = tubewalltemps(0)
+                tmsw = tubewalltemps(1)
+                Ucount1 = tubewalltemps(3)
+                hs = tubewalltemps(5)
+            Wend
+            'Split tube length in to single and two phase sections, defining t2t and t2s as the tube side and shell side bulk fluid temps, respectively, at the intersection.
+            'Initially set t2t as tit, which implies no single phase section
+            t2t = tit
+            t2tdelta = (t2t - tot) / 2
+            dptSF = 0 'tube side pressure loss in single phase section
+            t2tw = dew_point(Ftt, fpart, omegai) + 1 'Initial guess value for tube wall surface temp at inlet to two phase section
+            count3 = 0
+            'Iterate to find t2t value at which condensation starts to form on tube wall
+            While Abs(t2tw - dew_point(Ftt, fpart - dptSF / 100, omegai)) > 0.01 And count3 < 100
+                count3 = count3 + 1
+                If t2t < tit Then
+                    QSF = mdott / (1 + omegai) * (Cp(Ftt, fpart, tit) * tit + omegai * hgwater(tit) - Cp(Ftt, fpart, t2t) * t2t - omegai * hgwater(t2t)) / 1000 'Sensible dissipation in single phase tube section
+                    t2s = outlet_temp(Fts, fpars, QSF, mdots, tos, t2t, 0, 0, -1 * config) 't2s is shell side outlet temp from two phase section, -1*config used to make function return inlet to single phase section based on specified outlet.
+                    'Calculate area required for dry dissipation from tit to t2t
+                    tms = (t2s + tos) / 2
+                    tmt = (tit + t2t) / 2
+                    Res = mdots * Dto / (Acs * mu(Fts, fpars, tms))
+                    tubewalltemps = tubewall(tms, tmt, Gt, Res, Dto, Dti, Xt, Lt, jtot, Rt, Ftt, Fts, fpart, fpars, Rfs, Rft, kappa, tubetyp, config, "dry", pattern)
+                    tmtwdry = tubewalltemps(0) 'tube side wall temperature for dry section of dry/wet application
+                    Ucount2 = tubewalltemps(3)
+                    htdry = tubewalltemps(4)
+                    hsdry = tubewalltemps(5)
+                    U = tubewalltemps(2)
+                    LMTD = ((tit - tos) - (t2t - t2s)) / (Log((tit - tos) / (t2t - t2s)))
+                    Areqdry = QSF * 1000 / (U * LMTD)
+                    tsw_inletdry = U / hsdry * (tit - tos) + tos 'shell side surface temperature at tube side inlet, dry tube side coeficient
+                    tsw_2dry = U / hsdry * (t2t - t2s) + t2s 'shell side surface temperature at point 2, dry tube side coeficient
+                Else
+                    Areqdry = 0
+                    t2s = tos
+                    QSF = 0
+                End If
+                dpt_array = dPsolver(tit, t2t, tmtwdry, Ftt, fpart, Gt, Dti, Lt, sigmat, omegai, kappa, tubetyp, config)
+                dptSF = dpt_array(0) * Areqdry / A 'tube side pressure loss in single phase section
+                'calculate area required for the two phase section
+                tms = (tis + t2s) / 2
+                tmt = (t2t + tot) / 2
+                Res = mdots * Dto / (Acs * mu(Fts, fpars, tms))
+                tubewalltemps = tubewall(tms, tmt, Gtcor, Res, Dto, Dti, Xt, Lt, jtot, Rt, Ftt, Fts, fpart, fpars, Rfs, Rft, kappa, tubetyp, config, "wet", pattern)
+                ht = tubewalltemps(4)
+                hs = tubewalltemps(5)
+                Ucount3 = tubewalltemps(3)
+                wetwall2 = wetwall_temp(Ftt, fpart - dptSF / 100, omegai, Rt, (hs ^ -1 + Rfs) ^ -1, (ht ^ -1 + Dto * Rft / Dti) ^ -1, t2s, t2t) 'tube wall temp at inlet to two phase section
+                t2tw = wetwall2(0)
+                wetwallcount1 = wetwall2(1)
+                If Abs(t2tw - dew_point(Ftt, fpart - dptSF / 100, omegai)) > 0.01 Then
+                    If t2tw > dew_point(Ftt, fpart - dptSF / 100, omegai) Then
+                        t2t = t2t - t2tdelta
+                    Else
+                        t2t = t2t + t2tdelta
+                    End If
+                    t2tdelta = t2tdelta / 2
+                End If
+            Wend
+            If t2t > tit Then t2t = tit
+            wetwall2 = wetwall_temp(Ftt, fpart - dptSF / 100, omegai, Rt, (hs ^ -1 + Rfs) ^ -1, (ht ^ -1 + Dto * Rft / Dti) ^ -1, t2s, t2t) 'tube wall temp at inlet to two phase section
+            t2tw = wetwall2(0)
+            E2t = (Cp(Ftt, fpart, t2t) * t2t + omegai * hgwater(t2t)) / (1 + omegai) 'Gas bulk enthalpy at two phase section inlet
+            omega2tw = 18.015 / Mw(Ftt) * Pswater(t2tw) / (fpart * 10 ^ 5 - dptSF * 1000 - Pswater(t2tw))
+            E2tw = (Cp(Ftt, fpart, t2tw) * t2tw + omega2tw * hgwater(t2tw)) / (1 + omega2tw) 'Gas saturated enthalpy at two phase section inlet tube wall
+            Eot = (Cp(Ftt, fpart, tot) * tot + omegao * hgwater(tot)) / (1 + omegao) 'Gas bulk enthalpy at two phase section outlet
+            wetwallo = wetwall_temp(Ftt, fpart - dpt / 100, omegao, Rt, (hs ^ -1 + Rfs) ^ -1, (ht ^ -1 + Dto * Rft / Dti) ^ -1, tis, tot)
+            totw = wetwallo(0)
+            wetwallcount2 = wetwallo(1)
+            omegaotw = 18.015 / Mw(Ftt) * Pswater(totw) / (fpart * 10 ^ 5 - dpt * 1000 - Pswater(totw))
+            Eotw = (Cp(Ftt, fpart, totw) * totw + omegaotw * hgwater(totw)) / (1 + omegaotw) 'Gas saturated enthalpy at two phase section outlet tube wall
+            LMED = ((E2t - E2tw) - (Eot - Eotw)) / (Log((E2t - E2tw) / (Eot - Eotw)))
+            htmt = (ht ^ -1 + Dto * Rft / Dti) ^ -1 / Cp(Ftt, fpart, tmt) 'mass transfer in wet section of cooler
+            Areqwet = (Qguess - QSF) * 1000 / (htmt * LMED)
+            Areq = Areqdry + Areqwet
+            If Abs(Areq / (A * (1 - 0.01 * SAM)) - 1) > 0.001 Then
+                If Areq > A * (1 - 0.01 * SAM) Then
+                    tot = tot + totdelta
+                Else
+                    tot = tot - totdelta
+                End If
+                totdelta = totdelta / 2
+            End If
+        Wend
+        Qguess = mdott / (1 + omegai) * (Cp(Ftt, fpart, tit) * tit + omegai * hgwater(tit) - Cp(Ftt, fpart, tot) * tot - omegao * hgwater(tot)) / 1000 'Sensible cooling for entire tube length
+        U = Qguess * 1000 / (A * (1 - 0.01 * SAM) * ((tit - tos) - (tot - tis)) / (Log((tit - tos) / (tot - tis)))) 'Average effective overall coefficient
+        ht = (ht * Areqwet + htdry * Areqdry) / Areq 'Average effective tube side coefficient
+        hs = (hs * Areqwet + hsdry * Areqdry) / Areq 'Average effective shell side coefficient
+        Qcount = count1
+        If Ucount1 > Ucount2 And Ucount1 > Ucount3 Then
+            Ucount = Ucount1
+        Else
+            If Ucount2 > Ucount3 Then
+                Ucount = Ucount2
+            Else
+                Ucount = Ucount3
+            End If
+        End If
+        If wetwallcount1 > wetwallcount2 Then
+            wetwallcount = wetwallcount1
+        Else
+            wetwallcount = wetwallcount2
+        End If
+    End If
+    Qsolver = Array(Qguess, Qcount, U, Ucount, dpt, dptcount, t2t, t2tw, totw, wetwallcount, tmtw, tmsw, Areqdry, ht, hs, htmt, LMED, tsw_inletdry, tsw_2dry, wetwall2(2), wetwallo(2))
+End Function
+
+Public Function QsolverSP(tit, tis, config, Ftt, Fts, fpart, fpars, mdots, mdott, omegai, Act, Acs, A, SAM, Rfs, Rft, Dto, Dti, Lt, Xt, Jc, Jl, Abas, Nss, Ntcc, Ntcw, Nb, Lbe, Lbc, kappa, Rt, tubetyp, pattern)
+'Funtions to interatively determine actual heat dissipation based on input fluid conditions, geometry and SINGLE PHASE flow
+    Dim Cmax, Cmin, Cs, Ct, Eff, Gs, Gt, jtot, NTU, Qguess, Qguesslast, R, Res, tms, tmt, tos, tot, U As Double
+    Dim count1 As Integer
+    Gt = mdott / Act
+    Gs = mdots / Acs
+    'Initial guess of heat load assuming...
+    tot = tis + tit / 2
+    Qguess = mdott / (1 + omegai) * ((Cp(Ftt, fpart, tit) * tit - Cp(Ftt, fpart, tot) * tot) + omegai * (hgwater(tit) - hgwater(tot))) / 1000
+    Qguesslast = Qguess * 1.1
+    'Iterate to converged heat load assume
+    count1 = 0
+    While Abs(Qguesslast / Qguess - 1) > 0.001 And count1 < 100
+        count1 = count1 + 1
+        Qguesslast = Qguess
+        tot = outlet_temp(Ftt, fpart, Qguess, mdott, tit, tis, 0, omegai, -1 * config)
+        tmt = (tit + tot) / 2
+        Ct = Qguess * 1000 / Abs(tit - tot) 'Tube side capacity rate in W/K
+        tos = outlet_temp(Fts, fpars, Qguess, mdots, tis, tit, 0, 0, config)
+        tms = (tis + tos) / 2
+        Cs = mdots * Cp(Fts, fpars, tms) 'Shell side capacity rate in W/K
+        Res = Gs * Dto / mu(Fts, fpars, tms)
+        jtot = Jtotal(Res, Jc, Jl, Abas, Acs, Nss, Ntcc, Ntcw, Nb, Lbe, Lbc)
+        tubewalltemps = tubewall(tms, tmt, Gt, Res, Dto, Dti, Xt, Lt, jtot, Rt, Ftt, Fts, fpart, fpars, Rfs, Rft, kappa, tubetyp, config, "dry", pattern)
+        U = tubewalltemps(2)
+        If Ct > Cs Then
+            Cmax = Ct
+            Cmin = Cs
+        Else
+            Cmax = Cs
+            Cmin = Ct
+        End If
+        R = Cmin / Cmax
+        NTU = U * A * (1 - 0.01 * SAM) / Cmin
+        Eff = (1 - Exp(-NTU * (1 - R))) / (1 - R * Exp(-NTU * (1 - R))) 'Thermal effectiveness for singe tube pass counterflow only
+        Qguess = Eff * Cmin / 1000 * (tis - tit) * config
+    Wend
+    QsolverSP = Array(Qguess, Qguesslast, count1, tubewalltemps(0), tubewalltemps(1), U, tubewalltemps(3), tubewalltemps(4), tubewalltemps(5), 0, 0)
+End Function
+
+Public Function tubewall(tms, tmt, Gt, Res, Dto, Dti, Xt, Lt, jtot, Rt, Ftt, Fts, fpart, fpars, Rfs, Rft, kappa, tubetyp, config, condition, pattern)
+'This function iterates to a converged solution for the tube surface temperatures, accounting fot the bulk:surface fluid property effect on heat transfer coefficients
+'The condition variable is used to determine if the Wcool dry or wet tube side Nusselt number should be applied.  It can only be assigned the values "dry" or "wet".
+    Dim hs, ht, Ret, twiguess, twoguess, Uguess, Uguesslast As Double
+    Dim count1 As Integer
+    twiguess = tmt
+    twoguess = tms
+    Ret = Gt * Dti / mu(Ftt, fpart, tmt)
+    ht = h_tube(Ret, Dto, Dti, Lt, tmt, twiguess, Ftt, fpart, kappa, tubetyp, config, condition) 'Tube side heat transfer coefficinet, referred to tube Dto
+    hs = h_shell(Res, tms, twoguess, Dto, Xt, jtot, Fts, fpars, config, pattern) 'Shell side heat transfer coefficient
+    Uguess = (hs ^ -1 + Rfs + Rt + Dto * Rft / Dti + ht ^ -1) ^ -1
+    Uguesslast = 1.05 * Uguess
+    count1 = 0
+    While Abs(Uguess / Uguesslast - 1) > 0.001 And count1 < 100
+        count1 = count1 + 1
+        Uguesslast = Uguess
+        twiguess = tmt + Uguess / (ht ^ -1 + Dto * Rft / Dti) ^ -1 * (tms - tmt)
+        twoguess = tms - Uguess / (hs ^ -1 + Rfs) ^ -1 * (tms - tmt)
+        ht = h_tube(Ret, Dto, Dti, Lt, tmt, twiguess, Ftt, fpart, kappa, tubetyp, config, condition)
+        hs = h_shell(Res, tms, twoguess, Dto, Xt, jtot, Fts, fpars, config, pattern)
+        Uguess = (hs ^ -1 + Rfs + Rt + Dto * Rft / Dti + ht ^ -1) ^ -1
+    Wend
+    If count1 < 100 Then
+        tubewall = Array(twiguess, twoguess, Uguess, count1, ht, hs)
+    Else
+        tubewall = "convergence error"
+    End If
+End Function
+ 
+Public Function dPsolver(t_i, t_o, tw, Ft, fpar, G, D, L, sigma, omegai, kappa, tubetyp, config)
+'This function iterates to a converged solution for pressure loss, in kPa, allowing for pressure effect on density
+    Dim dPguess, dPguesslast, f, Gcor, Kc, Ke, omegao, Po, rho_i, rho_m, rho_o, Re As Double
+    Dim count1 As Integer
+    Re = G * D / mu(Ft, fpar, 0.5 * (t_i + t_o))
+    ftube = f_tube(Re, L, D, kappa, Ft, fpar, 0.5 * (t_i + t_o), tw, tubetyp, config)
+    f = ftube(0)
+    rho_i = rho(Ft, fpar, t_i) * (1 + omegai) / (1 + (Mw(Ft) / 18.015) * omegai)
+    rho_o = rho(Ft, fpar, t_o) * (1 + omegai) / (1 + (Mw(Ft) / 18.015) * omegai)
+    rho_m = 0.5 * (rho_i + rho_o)
+    dPguess = G ^ 2 / (2000 * rho_m) * (4 * L * f / D)
+    dPguesslast = dPguess * 1.1
+    count1 = 0
+    While Abs(dPguess / dPguesslast - 1) > 0.001 And count1 < 100
+        count1 = count1 + 1
+        dPguesslast = dPguess
+        Po = fpar - dPguess / 100
+        If Po < 0.00001 Then
+            Po = 0.00001
+        End If
+        omegao = 18.015 / Mw(Ft) * Pswater(t_o) / (Po * 10 ^ 5 - Pswater(t_o))
+        If omegai < omegao Or omegao < 0 Then omegao = omegai
+        rho_o = rho(Ft, Po, t_o) * (1 + omegao) / (1 + (Mw(Ft) / 18.015) * omegao)
+        rho_m = 0.5 * (rho_i + rho_o)
+        Gcor = G * (1 + 0.5 * (omegai + omegao)) / (1 + omegai) 'tube side mass velocity corrected to be consistent with Wcool the pressure loss is based on the average mass flow of gas + water vapour
+        Re = Gcor * D / mu(Ft, fpar, 0.5 * (t_i + t_o))
+        ftube = f_tube(Re, L, D, kappa, Ft, fpar, 0.5 * (t_i + t_o), tw, tubetyp, config)
+        f = ftube(0)
+        If Left(tubetyp, 1) = "P" Then
+            Kc_Ke = KcKe(Re, D, L, sigma)
+            Kc = Kc_Ke(0)
+            Ke = Kc_Ke(1)
+            dPguess = Gcor ^ 2 / (2000 * rho_i) * ((1 - sigma ^ 2 + Kc) + 4 * L * f / D * (rho_i / rho_m) + 2 * (rho_i / rho_o - 1) - (1 - sigma ^ 2 - Ke) * rho_i / rho_o)
+        Else
+            '0.8x correction added 250529 in I0-1, to make predicted pressure losses more similar to Wcool
+            dPguess = 0.8 * Gcor ^ 2 / (2000 * rho_m) * (4 * L * f / D)
+        End If
+    Wend
+    dPsolver = Array(dPguess, dPguesslast, count1, f, ftube(1), Kc, Ke, omegao)
+End Function
+
+-------------------------------------------------------------------------------
+VBA MACRO Module4.bas 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Module4'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+'-----------------  GEOMETRY AND FORMATTING FUNCTIONS ------------------------
+
+Public Function tubesheet_thk(typ, dp, t1, t2, t3, t4)
+'Selects tubesheet thickness from 2 options based on bundle type and design pressure
+    If typ = "Fixed" Then
+        If dp = 200 Then tubesheet_thk = t1
+        If dp = 300 Then tubesheet_thk = t2
+    Else
+        If dp = 200 Then tubesheet_thk = t3
+        If dp = 300 Then tubesheet_thk = t4
+    End If
+End Function
+
+Public Function Nb_custom(Lt, dts1, dts2, dtb, Lbez, Lbc, config)
+'Determines the number of baffles used in a custom tube length model
+'config is set to Odd or Even depending on whether the user wants shell nozzles in-line or opposing
+    Dim Nbmax As Integer
+    Nbmax = Int((Lt - dts1 - dts2 - 2 * Lbez - dtb) / (Lbc + dtb)) + 1
+    If 2 * Int(Nbmax / 2) < Nbmax Then
+        If config = "Odd" Then
+            Nb_custom = Nbmax
+        Else
+            Nb_custom = Nbmax - 1
+        End If
+    Else
+        If config = "Odd" Then
+            Nb_custom = Nbmax - 1
+        Else
+            Nb_custom = Nbmax
+        End If
+    End If
+End Function
+
+Public Function Roundsf3(x)
+    If Abs(x) < 0.001 Then
+       xsf = Round(x, 6)
+    End If
+    If Abs(x) >= 0.001 And Abs(x) < 0.01 Then
+        xsf = Round(x, 5)
+    End If
+    If Abs(x) >= 0.01 And Abs(x) < 0.1 Then
+        xsf = Round(x, 4)
+    End If
+    If Abs(x) >= 0.1 And Abs(x) < 1 Then
+        xsf = Round(x, 3)
+    End If
+    If Abs(x) >= 1 And Abs(x) < 10 Then
+        xsf = Round(x, 2)
+    End If
+    If Abs(x) >= 10 Then
+        xsf = Round(x, 1)
+    End If
+    If Abs(x) >= 100 Then
+        xsf = Round(x, 0)
+    End If
+    Roundsf3 = xsf
+End Function
+
+Public Function Roundsf4(x)
+    If Abs(x) < 0.001 Then
+       xsf = Round(x, 7)
+    End If
+    If Abs(x) >= 0.001 And Abs(x) < 0.01 Then
+        xsf = Round(x, 6)
+    End If
+    If Abs(x) >= 0.01 And Abs(x) < 0.1 Then
+        xsf = Round(x, 5)
+    End If
+    If Abs(x) >= 0.1 And Abs(x) < 1 Then
+        xsf = Round(x, 4)
+    End If
+    If Abs(x) >= 1 And Abs(x) < 10 Then
+        xsf = Round(x, 3)
+    End If
+    If Abs(x) >= 10 And Abs(x) < 100 Then
+        xsf = Round(x, 2)
+    End If
+    If Abs(x) >= 100 And Abs(x) < 1000 Then
+        xsf = Round(x, 1)
+    End If
+    If Abs(x) >= 1000 Then
+        xsf = Round(x, 0)
+    End If
+    Roundsf4 = xsf
+End Function
+
+Public Function UoMi_flow(uom, value, Ftype, fpar, t, omega)
+'Function converts input 'value' to output of mass flow, in kg/s, based on input UoM, fluid code 'ftype', fluid parameter 'fpar' and temperature 't' °C.
+'The second output is an identifier based on whether the input UoM was volume or mass based (note S or N volume flows are treated as mass based).
+    Dim mdot As Double
+    Dim typ As String
+    Select Case uom
+        Case "kg/s"
+            mdot = value
+            typ = "m"
+        Case "kg/min"
+            mdot = value / 60
+            typ = "m"
+        Case "kg/h"
+            mdot = value / 3600
+            typ = "m"
+        Case "litre/min"
+            mdot = value * rho(Ftype, fpar, t) / 60000
+            typ = "v"
+        Case "m3/s"
+            mdot = value * rho(Ftype, fpar, t)
+            typ = "v"
+        Case "Am3/s"
+            mdot = value * rho(Ftype, fpar, t) * ((1 + omega) / (1 + Mw(Ftype) * omega / 18.015))
+            typ = "v"
+        Case "m3/h"
+            mdot = value * rho(Ftype, fpar, t) / 3600
+            typ = "v"
+        Case "Am3/h"
+            mdot = value * rho(Ftype, fpar, t) / 3600 * ((1 + omega) / (1 + Mw(Ftype) * omega / 18.015))
+            typ = "v"
+        Case "Nm3/h"
+            mdot = value * rho(Ftype, 1.01325, 0) / 3600
+            typ = "m"
+        Case "lb/s"
+            mdot = value / 2.205
+            typ = "m"
+        Case "lb/min"
+            mdot = value / (2.205 * 60)
+            typ = "m"
+        Case "lb/h"
+            mdot = value / (2.205 * 3600)
+            typ = "m"
+        Case "USgpm"
+            mdot = value * 0.8327 * rho(Ftype, fpar, t) / (220 * 60)
+            typ = "v"
+        Case "Acfm"
+            mdot = value * rho(Ftype, fpar, t) / (3.281 ^ 3 * 60) * ((1 + omega) / (1 + Mw(Ftype) * omega / 18.015))
+            typ = "v"
+        Case "Scfm"
+            'Standard cfm based on US industry norm of 0.075lb/ft3 for air, equating to 60°F/14.5psia
+            mdot = value * rho(Ftype, 1.0138, 15.5556) / (3.281 ^ 3 * 60)
+            typ = "m"
+    End Select
+    UoMi_flow = Array(mdot, typ)
+End Function
+
+Public Function UoMo_flow(uom, value, Ftype, fpar, t, omega)
+'Function converts mass flow value in kg/s to selected output UoM based on fluid code 'ftype'.
+    Dim flow As Double
+    Select Case uom
+        Case "kg/s"
+            flow = value
+        Case "kg/min"
+            flow = value * 60
+        Case "kg/h"
+            flow = value * 3600
+        Case "Nm3/h"
+            flow = value / rho(Ftype, 1.01325, 0) * 3600
+        Case "lb/s"
+            flow = value * 2.205
+        Case "lb/min"
+            flow = value * 2.205 * 60
+        Case "lb/h"
+            flow = value * 2.205 * 3600
+        Case "Acfm"
+            'Conversion at reference condtions of 'fpar' and 't'
+            flow = value / (rho(Ftype, fpar, t) * (1 + omega) / (1 + Mw(Ftype) * omega / 18.015)) * 3.281 ^ 3 * 60
+        Case "Scfm"
+            'Standard cfm based on US industry norm of 0.075lb/ft3 for air, equating to 60°F/14.5psia
+            flow = value / rho(Ftype, 1.0138, 15.5556) * 3.281 ^ 3 * 60
+        Case "Sm3/h"
+            'Standard cfm based on US industry norm of 0.075lb/ft3 for air, equating to 60°F/14.5psia
+            flow = value / rho(Ftype, 1.0138, 15.5556) * 3600
+        Case "USgpm"
+            'Conversion at reference temperature 't'
+            flow = value / (rho(Ftype, fpar, t) * 0.8327) * 220 * 60
+        Case "litre/min"
+            'Conversion at reference temperature 't'
+            flow = value / rho(Ftype, fpar, t) * 1000 * 60
+        Case "m3/s"
+            'Conversion at reference temperature 't'
+            flow = value / rho(Ftype, fpar, t)
+        Case "m3/h"
+            'Conversion at reference temperature 't'
+            flow = value / rho(Ftype, fpar, t) * 3600
+        Case "Am3/s"
+             'Conversion at reference condtions of 'fpar' and 't'
+            flow = value / (rho(Ftype, fpar, t) * (1 + omega) / (1 + Mw(Ftype) * omega / 18.015))
+        Case "Am3/h"
+             'Conversion at reference condtions of 'fpar' and 't'
+            flow = value / (rho(Ftype, fpar, t) * (1 + omega) / (1 + Mw(Ftype) * omega / 18.015)) * 3600
+    End Select
+    UoMo_flow = flow
+End Function
+
+Public Function UoMi_press(uom, value)
+'Function converts input 'value' to output of pressure in bar(a), based on input UoM.
+    Dim p As Double
+    Select Case uom
+        Case "bar(a)", "barg"
+            p = value
+        Case "mbar(a)", "mbarg"
+            p = value / 1000
+        Case "kPa(a)", "kPag"
+            p = value / 100
+        Case "psi(a)", "psig"
+            p = value / 14.5
+    End Select
+    UoMi_press = p
+End Function
+
+Public Function UoMo_press(uom, value)
+'Function converts 'value' in bara to output in selected UoM.
+    Dim p As Double
+    Select Case uom
+        Case "bar(a)"
+            p = value
+        Case "mbar(a)"
+            p = value * 1000
+        Case "kPa(a)"
+            p = value * 100
+        Case "psi(a)"
+            p = value * 14.5
+    End Select
+    UoMo_press = p
+End Function
+
+Public Function UoMi_temp(uom, value)
+'Function converts input 'value' to output of temperature in °C, based on input UoM.
+    Dim t As Double
+    Select Case uom
+        Case "°C"
+            t = value
+        Case "°F"
+            t = (value - 32) / 1.8
+    End Select
+    UoMi_temp = t
+End Function
+
+Public Function UoMo_temp(uom, value)
+'Function converts 'value' in °C to requested 'uom'.
+    Dim t As Double
+    Select Case uom
+        Case "°C"
+            t = value
+        Case "°F"
+            t = value * 1.8 + 32
+    End Select
+    UoMo_temp = t
+End Function
+
+-------------------------------------------------------------------------------
+VBA MACRO Sheet7.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Sheet7'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
+-------------------------------------------------------------------------------
+VBA MACRO Sheet8.cls 
+in file: xl/vbaProject.bin - OLE stream: 'VBA/Sheet8'
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+(empty macro)
++----------+--------------------+---------------------------------------------+
+|Type      |Keyword             |Description                                  |
++----------+--------------------+---------------------------------------------+
+|Suspicious|output              |May write to a file (if combined with Open)  |
+|Suspicious|shell               |May run an executable file or a system       |
+|          |                    |command                                      |
+|Suspicious|call                |May call a DLL using Excel 4 Macros (XLM/XLF)|
+|Suspicious|Hex Strings         |Hex-encoded strings were detected, may be    |
+|          |                    |used to obfuscate strings (option --decode to|
+|          |                    |see all)                                     |
+|Suspicious|Base64 Strings      |Base64-encoded strings were detected, may be |
+|          |                    |used to obfuscate strings (option --decode to|
+|          |                    |see all)                                     |
+|Hex String|@T W                |40542057                                     |
++----------+--------------------+---------------------------------------------+
+
