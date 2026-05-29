@@ -1,0 +1,2 @@
+# Python stdlib only — no external dependencies required
+# Vercel uses this file to detect the Python runtime
