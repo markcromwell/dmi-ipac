@@ -132,7 +132,7 @@ def run(base_url):
     print(f'\n{"="*45}')
     print(f'RESULT: {passed}/{total} checks passed')
     if failed == 0:
-        print('ALL TESTS PASSED ✓')
+        print('ALL TESTS PASSED')
     else:
         print(f'{failed} FAILED — app is NOT ready')
     print('='*45)
