@@ -178,6 +178,50 @@ h_fg = 2468.4 kJ/kg (fixed DMI convention, per Wcool 2.03 consistency)
 2. Add custom domain in Netlify dashboard
 3. Netlify auto-provisions SSL certificate
 
+## Local Development
+
+### Full stack (frontend + API)
+```
+netlify dev
+```
+Starts frontend at http://localhost:8888 and API at http://localhost:8888/.netlify/functions/calculate
+
+### Unit tests (no server needed, fast, run in CI)
+```
+python -m pytest netlify/functions/tests/test_calculate_unit.py -v
+```
+Tests the calculation engine directly — no HTTP. Should pass in <1s.
+
+### Integration tests (start netlify dev first)
+```
+python -m pytest netlify/functions/tests/test_calculate_api.py -v
+```
+Automatically skipped if server isn't running — CI never breaks.
+
+### Reference case for manual validation
+
+Enter these inputs and check the outputs match:
+
+**Inputs:** Model W0230 · Fixed · Std Groove · Stainless S304*  
+Compressor: 14.7 psia / 85°F / 36% RH · Air side: 150 psig / 1423 Scfm / 250°F  
+Water side: 70°F / 60 USgpm
+
+**Expected outputs:**
+
+| Output | Value | Tolerance |
+|--------|-------|-----------|
+| Total heat | 292,245 Btu/h | ±5,000 |
+| Tube outlet | 93.6°F | ±3°F* |
+| Shell outlet | 79.8°F | ±0.5°F |
+| Tube dP | 9.06 psi | ±0.5 |
+| Shell dP | 7.55 psi | ±0.5 |
+| Condensate | 39.3 lb/h | ±2.0 |
+| Surface area | 20.8 ft² | ±0.5 |
+
+*Tube outlet tolerance is wider because the spreadsheet VBA uses a two-zone wet/dry
+condensation model (formulas.md §12.2) which our simplified single-zone implementation
+approximates. All other values are within 1-2% of the spreadsheet.
+
 ## MCP Code Forge Specs
 - Spec #1323: Spreadsheet logic extraction → formulas.md (COMPLETED manually 2026-05-29)
 - Spec #1324: Build web app (frontend + Netlify Function backend)

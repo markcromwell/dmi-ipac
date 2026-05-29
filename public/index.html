@@ -299,7 +299,7 @@ document.getElementById('calcForm').addEventListener('submit', async e => {
   lastInputs = payload;
 
   try {
-    const res = await fetch('/api/calculate', {
+    const res = await fetch('/.netlify/functions/calculate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

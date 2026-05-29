@@ -1,5 +1,12 @@
 [build]
-  publish = "public"
+  publish = "."
+  functions = "netlify/functions"
+  command = "npm run build:css"
 
 [functions]
-  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

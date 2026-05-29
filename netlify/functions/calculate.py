@@ -574,12 +574,6 @@ def solve(inputs):
         ht_v, _ = tube_htc(mdot_t, T_mt, P_t, fluid_t, Rf_t, geo, ttype)
         hs_v, _, _, _, _, _, _ = shell_htc(mdot_s, T_ms_t, fluid_s, Rf_s, geo)
         U_t  = 1.0 / (1.0/hs_v + Rf_s + R_w + Rf_t + 1.0/ht_v)
-        # Condensation U enhancement (self-consistent, calibrated to W0230 reference case)
-        T_wall_v2 = (ht_v * T_ot_try + hs_v * T_is) / max(ht_v + hs_v, 1.0)
-        if T_dew > T_is and T_wall_v2 < T_dew and omega > 0:
-            omega_out_v2 = min(omega, specific_humidity_from_rh(100, T_ot_try, P_t))
-            f_cond_v = min(1.0, (omega - omega_out_v2) / omega)
-            U_t = U_t * (1.0 + 0.08 * f_cond_v)
         Q_ua = U_t * A_eff * LMTD_t
         return Q_total, T_os_t, T_ms_t, LMTD_t, U_t, Q_total - Q_ua
 
