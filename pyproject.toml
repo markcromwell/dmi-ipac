@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "wcac"
+version = "1.0.0"
+description = "DMI IPAC / WCAC Heat Exchanger Calculation Library"
+requires-python = ">=3.9"
+dependencies = []   # stdlib only
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "pytest-cov"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["wcac*"]
