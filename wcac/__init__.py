@@ -43,6 +43,8 @@ which variant this library uses (defaults to display values).
 """
 from .types     import WCACInputs, WCACResult
 from .calculate import calculate
+from .validation import (validate, assert_valid, ValidationIssue,
+                         Severity, WCACValidationError)
 from .models    import get_model, list_models, ModelGeometry, GEOMETRY_OVERRIDES
 from .geometry  import build_geometry, BundleGeometry, shell_dp_kPa
 from .fluids    import (rho, Cp, K, mu, Pr, Mw,
@@ -64,6 +66,9 @@ __author__  = 'Diversified Manufacturing Inc.'
 __all__ = [
     # Primary API
     'calculate', 'WCACInputs', 'WCACResult',
+    # Validation
+    'validate', 'assert_valid', 'ValidationIssue', 'Severity',
+    'WCACValidationError',
     # Model table
     'get_model', 'list_models', 'ModelGeometry', 'GEOMETRY_OVERRIDES',
     # Geometry

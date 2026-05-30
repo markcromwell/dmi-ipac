@@ -47,12 +47,18 @@ TUBE_MAT_K = {
 
 # ── Main entry point ──────────────────────────────────────────────────────────
 
-def calculate(inp: WCACInputs) -> WCACResult:
+def calculate(inp: WCACInputs, validate_inputs: bool = False) -> WCACResult:
     """Run the WCAC heat exchanger calculation.
 
     This is the library's main entry point.  Pass a WCACInputs dataclass,
     receive a WCACResult dataclass.  All internal calculations are in SI;
     inputs and outputs are in the units specified in the dataclasses.
+
+    validate_inputs: if True, raises WCACValidationError when an input would
+    produce a physically meaningless result (e.g. negative pressure, glycol
+    concentration outside the fitted range). Use wcac.validate() to get the
+    full list of issues including non-fatal warnings. Front-ends should
+    validate at the UI boundary and show warnings to the user.
 
     Example::
 
@@ -60,6 +66,9 @@ def calculate(inp: WCACInputs) -> WCACResult:
         result = calculate(WCACInputs(model='W0230', tube_temp_in_F=250, ...))
         print(f"Q = {result.Q_Btu_h:,.0f} Btu/h")
     """
+    if validate_inputs:
+        from .validation import assert_valid
+        assert_valid(inp)
     # ── Fluid codes ─────────────────────────────────────────────────────────
     Ftt = _FLUID_CODE.get(inp.tube_fluid, 'g-01')
     Fts = _FLUID_CODE.get(inp.shell_fluid, 'l-10')
