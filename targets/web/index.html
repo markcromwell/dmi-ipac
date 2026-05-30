@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMI WCAC — Heat Exchanger Design (API)</title>
+<style>
+  :root { --bg:#111827; --panel:#1f2937; --border:#374151; --text:#f9fafb;
+          --muted:#9ca3af; --accent:#2563eb; --green:#34d399; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); }
+  header { background:#0b1220; padding:14px 24px; border-bottom:1px solid var(--border); }
+  header h1 { margin:0; font-size:16px; letter-spacing:.04em; }
+  header p { margin:2px 0 0; font-size:11px; color:var(--muted); }
+  .wrap { max-width:1200px; margin:0 auto; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:16px; }
+  .sec { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:10px; }
+  label { display:block; font-size:11px; color:var(--muted); text-transform:uppercase; margin:8px 0 2px; }
+  input,select { width:100%; padding:7px 9px; background:#111827; border:1px solid var(--border); border-radius:5px; color:var(--text); font-size:14px; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  button { background:var(--accent); color:#fff; border:none; padding:11px 18px; border-radius:7px; font-weight:700; cursor:pointer; font-size:14px; }
+  button:hover { background:#1d4ed8; }
+  button.secondary { background:#059669; }
+  .rv { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #111827; font-size:13px; }
+  .rv .v { font-family:monospace; font-weight:700; }
+  .rv .v.hi { color:var(--green); }
+  .full { grid-column:1 / -1; }
+  .warn { color:#fbbf24; font-size:12px; margin:4px 0; }
+  .err { color:#f87171; font-size:13px; margin:8px 0; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  td,th { text-align:left; padding:4px 8px; border-bottom:1px solid var(--border); }
+  .muted { color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>DIVERSIFIED MANUFACTURING INC.</h1>
+  <p>IPAC Air Cooled Heat Exchanger — REST API client with saved designs</p>
+</header>
+
+<div class="wrap">
+  <!-- Column 1: Config + Tube -->
+  <div class="card">
+    <div class="sec">Aftercooler</div>
+    <label>Model</label><select id="model"></select>
+    <div class="row">
+      <div><label>Bundle</label><select id="bundle_type"><option>Fixed</option><option>Removable</option></select></div>
+      <div><label>Tube type</label><select id="tube_type"><option>Std groove</option><option>Plain</option></select></div>
+    </div>
+    <label>Tube material</label><select id="tube_material"></select>
+
+    <div class="sec" style="margin-top:14px">Tube Side (Gas)</div>
+    <label>Fluid</label><select id="tube_fluid"></select>
+    <div class="row">
+      <div><label>Pressure (psig)</label><input id="tube_pressure_psig" type="number" value="150"></div>
+      <div><label>Temp in (°F)</label><input id="tube_temp_in_F" type="number" value="250"></div>
+    </div>
+    <div class="row">
+      <div><label>Flow</label><input id="tube_flow" type="number" value="1423"></div>
+      <div><label>Unit</label><select id="tube_flow_uom"></select></div>
+    </div>
+    <label>Fouling (R·ft²·h/Btu)</label><input id="tube_fouling" type="number" value="0">
+  </div>
+
+  <!-- Column 2: Shell + Suction -->
+  <div class="card">
+    <div class="sec">Shell Side (Liquid)</div>
+    <label>Fluid</label><select id="shell_fluid"></select>
+    <div class="row">
+      <div><label>Temp in (°F)</label><input id="shell_temp_in_F" type="number" value="70"></div>
+      <div><label>Glycol %</label><input id="glycol_concentration" type="number" value="40"></div>
+    </div>
+    <div class="row">
+      <div><label>Flow</label><input id="shell_flow" type="number" value="60"></div>
+      <div><label>Unit</label><select id="shell_flow_uom"></select></div>
+    </div>
+    <label>Fouling (R·ft²·h/Btu)</label><input id="shell_fouling" type="number" value="0">
+
+    <div class="sec" style="margin-top:14px">Compressor Suction</div>
+    <div class="row">
+      <div><label>Pressure (psia)</label><input id="suction_pressure_psia" type="number" value="14.7"></div>
+      <div><label>Temp (°F)</label><input id="suction_temp_F" type="number" value="85"></div>
+    </div>
+    <label>Relative humidity (%)</label><input id="suction_rh_pct" type="number" value="36">
+    <label>Surface area margin (%)</label><input id="surface_area_margin" type="number" value="0">
+
+    <div style="margin-top:16px;display:flex;gap:8px">
+      <button onclick="doCalc()">CALCULATE</button>
+      <button class="secondary" onclick="doSave()">Save</button>
+    </div>
+    <div id="messages"></div>
+  </div>
+
+  <!-- Column 3: Results -->
+  <div class="card">
+    <div class="sec">Results</div>
+    <div id="results"><span class="muted">Enter inputs and click Calculate.</span></div>
+  </div>
+
+  <!-- Saved designs -->
+  <div class="card full">
+    <div class="sec">Saved Designs</div>
+    <table id="designs"><thead><tr><th>ID</th><th>Name</th><th>Tag</th><th>Model</th><th>Q (Btu/h)</th><th>Updated</th><th></th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<script>
+// Point this at your deployed FastAPI service.
+const API = window.WCAC_API || 'http://localhost:8000';
+
+const INPUT_IDS = ['model','bundle_type','tube_type','tube_material','tube_fluid',
+  'tube_pressure_psig','tube_temp_in_F','tube_flow','tube_flow_uom','tube_fouling',
+  'shell_fluid','shell_temp_in_F','shell_flow','shell_flow_uom','shell_fouling',
+  'glycol_concentration','suction_pressure_psia','suction_temp_F','suction_rh_pct',
+  'surface_area_margin'];
+const NUM = new Set(['tube_pressure_psig','tube_temp_in_F','tube_flow','tube_fouling',
+  'shell_temp_in_F','shell_flow','shell_fouling','glycol_concentration',
+  'suction_pressure_psia','suction_temp_F','suction_rh_pct','surface_area_margin']);
+
+function gather() {
+  const o = {};
+  for (const id of INPUT_IDS) {
+    const el = document.getElementById(id);
+    o[id] = NUM.has(id) ? parseFloat(el.value) : el.value;
+  }
+  return o;
+}
+
+async function populate() {
+  // Models, fluids, materials, units from the API
+  const [models, fluids] = await Promise.all([
+    fetch(API+'/models').then(r=>r.json()),
+    fetch(API+'/fluids').then(r=>r.json()),
+  ]);
+  fill('model', models.models, 'W0230');
+  fill('tube_fluid', fluids.tube_fluids, 'Air');
+  fill('shell_fluid', fluids.shell_fluids, 'Water');
+  fill('tube_material', fluids.tube_materials, 'Stainless (S3040*)');
+  fill('tube_flow_uom', fluids.tube_flow_uoms, 'Scfm');
+  fill('shell_flow_uom', fluids.shell_flow_uoms, 'USgpm');
+  loadDesigns();
+}
+function fill(id, items, sel) {
+  const el = document.getElementById(id);
+  el.innerHTML = items.map(x=>`<option ${x===sel?'selected':''}>${x}</option>`).join('');
+}
+
+async function doCalc() {
+  const msg = document.getElementById('messages'); msg.innerHTML='';
+  try {
+    const res = await fetch(API+'/calculate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(gather())
+    });
+    const data = await res.json();
+    if (res.status === 422) {
+      msg.innerHTML = data.detail.errors.map(e=>`<div class="err">✗ ${e.field}: ${e.message}</div>`).join('');
+      return;
+    }
+    if (!res.ok) { msg.innerHTML=`<div class="err">Server error ${res.status}</div>`; return; }
+    (data.warnings||[]).forEach(w=>msg.innerHTML+=`<div class="warn">⚠ ${w.message}</div>`);
+    showResult(data.result);
+  } catch(e) { msg.innerHTML=`<div class="err">${e.message} (is the API running at ${API}?)</div>`; }
+}
+
+function showResult(r) {
+  const rows = [
+    ['Total heat', r.Q_Btu_h.toLocaleString()+' Btu/h', true],
+    ['Tube outlet', r.tube_out_F.toFixed(1)+' °F'],
+    ['Shell outlet', r.shell_out_F.toFixed(1)+' °F'],
+    ['Dew point', r.dew_point_F.toFixed(1)+' °F'],
+    ['Tube dP', r.dP_tube_psi.toFixed(2)+' psi'],
+    ['Shell dP', r.dP_shell_psi.toFixed(2)+' psi'],
+    ['Tube Re', Math.round(r.tube_Re).toLocaleString()],
+    ['Shell Re', Math.round(r.shell_Re).toLocaleString()],
+    ['Tube HTC', r.tube_HTC_btu.toFixed(0)+' Btu/h·ft²·R'],
+    ['Shell HTC', r.shell_HTC_btu.toFixed(0)+' Btu/h·ft²·R'],
+    ['Overall U', r.overall_U_btu.toFixed(0)+' Btu/h·ft²·R'],
+    ['LMTD', r.LMTD_R.toFixed(1)+' °R'],
+    ['Surface area', r.area_ft2.toFixed(1)+' ft²'],
+    ['Tubes', r.Nt],
+    ['Condensate', r.condensate_lb_h.toFixed(1)+' lb/h'],
+    ['Condensing', r.condensing_Btu_h.toLocaleString()+` Btu/h (${r.condensing_pct.toFixed(1)}%)`],
+  ];
+  document.getElementById('results').innerHTML = rows.map(([k,v,hi])=>
+    `<div class="rv"><span>${k}</span><span class="v ${hi?'hi':''}">${v}</span></div>`).join('') +
+    `<div class="rv"><span>Tube wall temps</span><span class="v" style="font-size:11px">${r.tube_wall_temps_F.map(t=>t.toFixed(0)).join(', ')} °F</span></div>`;
+}
+
+async function doSave() {
+  const name = prompt('Design name:', `${document.getElementById('model').value} case`);
+  if (!name) return;
+  const tag = prompt('Tag (optional):', '') || null;
+  const res = await fetch(API+'/designs', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({name, tag, inputs: gather()})
+  });
+  if (res.ok) { loadDesigns(); }
+  else { const d = await res.json(); alert('Save failed: '+JSON.stringify(d.detail)); }
+}
+
+async function loadDesigns() {
+  const data = await fetch(API+'/designs').then(r=>r.json());
+  const tb = document.querySelector('#designs tbody');
+  tb.innerHTML = data.designs.map(d=>`<tr>
+    <td>${d.id}</td><td>${d.name}</td><td>${d.tag||''}</td><td>${d.model}</td>
+    <td>${d.q_btu_h?Math.round(d.q_btu_h).toLocaleString():''}</td>
+    <td class="muted">${(d.updated_at||'').slice(0,16).replace('T',' ')}</td>
+    <td><a href="#" onclick="loadOne(${d.id});return false" style="color:#3b82f6">load</a>
+        &nbsp;<a href="#" onclick="delOne(${d.id});return false" style="color:#f87171">del</a></td>
+  </tr>`).join('');
+}
+
+async function loadOne(id) {
+  const d = await fetch(API+`/designs/${id}`).then(r=>r.json());
+  for (const k of INPUT_IDS) if (k in d.inputs) document.getElementById(k).value = d.inputs[k];
+  showResult(d.results);
+}
+async function delOne(id) {
+  if (!confirm('Delete design '+id+'?')) return;
+  await fetch(API+`/designs/${id}`, {method:'DELETE'});
+  loadDesigns();
+}
+
+populate();
+</script>
+</body>
+</html>

@@ -163,3 +163,53 @@ def reference():
     inp = WCACInputs()
     result = calculate(inp)
     return {'inputs': asdict(inp), 'result': asdict(result)}
+
+
+# ── Saved designs (persistence) ───────────────────────────────────────────────
+
+from . import db as _db
+
+
+class SaveDesignRequest(BaseModel):
+    name:   str
+    tag:    Optional[str] = None
+    inputs: InputsModel
+
+
+@app.post('/designs')
+def create_design(req: SaveDesignRequest):
+    """Validate, calculate, and persist a design. Returns the new design id."""
+    inp = req.inputs.to_inputs()
+    errors, warnings = _split_issues(inp)
+    if errors:
+        raise HTTPException(status_code=422,
+                            detail={'message': 'invalid inputs',
+                                    'errors': [e.model_dump() for e in errors]})
+    result = calculate(inp)
+    design_id = _db.save_design(req.name, asdict(inp), asdict(result), req.tag)
+    return {'id': design_id, 'q_btu_h': result.Q_Btu_h,
+            'warnings': [w.model_dump() for w in warnings]}
+
+
+@app.get('/designs')
+def get_designs(model: Optional[str] = None, tag: Optional[str] = None,
+                limit: int = 100):
+    """List saved designs (summary rows), newest first."""
+    return {'designs': _db.list_designs(model=model, tag=tag, limit=limit)}
+
+
+@app.get('/designs/{design_id}')
+def get_one_design(design_id: int):
+    """Retrieve a saved design's full inputs and results."""
+    d = _db.get_design(design_id)
+    if d is None:
+        raise HTTPException(status_code=404, detail='design not found')
+    return d
+
+
+@app.delete('/designs/{design_id}')
+def remove_design(design_id: int):
+    """Delete a saved design."""
+    if not _db.delete_design(design_id):
+        raise HTTPException(status_code=404, detail='design not found')
+    return {'deleted': design_id}
