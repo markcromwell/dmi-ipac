@@ -78,6 +78,11 @@ class BundleGeometry:
     OTL:       float
     ts_geom:   float   # tubesheet thickness used for Lt_eff
 
+    # ── Bell-Delaware pressure-drop correction factors (exact, geometry-only) ──
+    Rl:        float = 0.0   # baffle leakage correction, pressure loss (geom F42)
+    Rb:        float = 0.0   # bundle bypass correction, pressure loss (geom F43)
+    Rs:        float = 0.0   # end zone correction, pressure loss (geom F45)
+
 
 def build_geometry(mg: ModelGeometry,
                    bundle_type: str = 'Fixed',
@@ -131,6 +136,7 @@ def _from_exact(mg: ModelGeometry, ex: dict) -> BundleGeometry:
         Dto=Dto, Dti=Dti, Dsi=mg.Dsi, Dsn=mg.Dsn, Xt=Xt, pattern=mg.pattern,
         Dbaffle=mg.Dbaffle, Bcut_cl=mg.Bcut_cl, Dhole=mg.Dhole,
         OTL=OTL, ts_geom=ts_geom,
+        Rl=ex.get('Rl', 0.0), Rb=ex.get('Rb', 0.0), Rs=ex.get('Rs', 0.0),
     )
 
 
@@ -261,60 +267,86 @@ def _compute_geometry(mg: ModelGeometry,
 
 def shell_dp_kPa(mdots: float, T_ms: float,
                  Fts: str, fpars: float,
-                 geo: BundleGeometry, config: int) -> float:
+                 geo: BundleGeometry, config: int,
+                 tmsw: float = None, tis: float = None, tos: float = None,
+                 sigmaS: float = None) -> float:
     """Shell-side total pressure drop, kPa.
 
-    Implements the spreadsheet calc sheet formulas D35–D47.
-    Uses VBA f_shell() for friction factor with variable-property correction.
+    EXACT transcription of the spreadsheet calc-sheet cell formulas D32–D47,
+    using the geometry-sheet correction factors Rl/Rb/Rs (geo.Rl/Rb/Rs).
 
-    Variable-property correction (spreadsheet D33): (μ_bulk/μ_wall)^0.14.
-    r_bp uses pure geometric ratio (Lbc cancels) per geometry sheet F43.
-    See CALCULATION_DISCREPANCIES.md.
+      D32 fs = f_shell(Res, Dto, Xt, pattern)            [constant property]
+      D33 vp = (mu_bulk/mu_wall)^(-0.14)                  [liquid; wall temp tmsw]
+      D34 fs = D32 * D33
+      D35 dP_ideal     = 2*fs*Ntcc*Gs^2 / rho(tms)
+      D36 dP_crossflow = D35*(Nb-1)*Rb*Rl / 1000
+      D37 Gw           = mdots / sqrt(Acs*Acw)
+      D38 dP_win_turb  = Nb*((2+0.6*Ntcw)*Gw^2/(2*rho))*Rl
+      D39 dP_win_lam   = Nb*(26*Gw*mu/rho*(Ntcw/(Xt-Dto)+Lbc/Dhw^2)+Gw^2/rho)*Rl
+      D40 dP_window    = blend(D38,D39 by Res)/1000
+      D41 dP_endzone   = D35*(1+Ntcw/Ntcc)*Rb*Rs / 1000
+      D42 Gn           = mdots / MIN(Acse,Acsn)
+      D43 Kc           = sigmaS<=0.18 ? 0.5-0.222*sigmaS : 0.55-0.5*sigmaS
+      D44 Ke           = (1-sigmaS)^2
+      D45 dP_noz_in    = Gn^2/(2000*rho(tis)) * (Acsn>Acse ? Kc : Ke)
+      D46 dP_noz_out   = Gn^2/(2000*rho(tos)) * (Acsn>Acse ? Ke : Kc)
+      D47 total        = D36 + D40 + D41 + D45 + D46
     """
     Dto=geo.Dto; Xt=geo.Xt; Acs=geo.Acs; Nb=geo.Nb
-    Lbc=geo.Lbc; Lbe=geo.Lbe; Ntcc=geo.Ntcc; Ntcw=geo.Ntcw
-    A_sb=geo.A_sb; A_bt=geo.A_bt; A_cw=geo.A_cw; D_hw=geo.D_hw
-    A_cse=geo.A_cse; A_csn=geo.A_csn; OTL=geo.OTL; Dsi=geo.Dsi
+    Lbc=geo.Lbc; Ntcc=geo.Ntcc; Ntcw=geo.Ntcw
+    A_cw=geo.A_cw; D_hw=geo.D_hw
+    A_cse=geo.A_cse; A_csn=geo.A_csn
+    Rl=geo.Rl; Rb=geo.Rb; Rs=geo.Rs
+    if sigmaS is None:
+        sigmaS = A_csn / max(A_cse, 1e-9)
+    if tis is None: tis = T_ms
+    if tos is None: tos = T_ms
 
     Gs = mdots / Acs
     rho_s = rho(Fts, fpars, T_ms)
     mu_s  = mu(Fts, fpars, T_ms)
-    Re    = Gs * Dto / max(mu_s, 1e-12)
+    Res   = Gs * Dto / max(mu_s, 1e-12)
 
-    # Variable property correction (D33)
-    T_wall = min(T_ms + 20, 80)
-    mu_wall = mu(Fts, fpars, T_wall)
-    vp_corr = (mu_s / mu_wall) ** 0.14
-    fF = f_shell(Re, Dto, Xt, geo.pattern) * vp_corr    # D34
+    # D32/D33/D34: friction factor with variable-property correction
+    fs_const = f_shell(Res, Dto, Xt, geo.pattern)
+    if Fts[0] == 'g':
+        # gas: ((273.15+tms)/(273.15+tmsw))^(config==1 ? -0.25 : 0)
+        n = -0.25 if config == 1 else 0.0
+        vp = ((273.15+T_ms)/(273.15+(tmsw if tmsw is not None else T_ms)))**n
+    else:
+        # liquid: (mu_bulk/mu_wall)^(-0.14)
+        mu_wall = mu(Fts, fpars, tmsw) if tmsw is not None else mu_s
+        vp = (mu_s / mu_wall)**(-0.14)
+    fs = fs_const * vp
 
-    # Rl (geometry sheet F42)
-    r_lm = (A_sb + 0.5*A_bt) / max(Acs, 1e-9)
-    Rl = math.exp(-3.3 * max(r_lm, 1e-9))
+    # D35/D36: crossflow
+    dP_ideal = 2 * fs * Ntcc * Gs**2 / rho_s
+    dP_crossflow = dP_ideal * (Nb - 1) * Rb * Rl / 1000
 
-    # Rb (geometry sheet F43) — pure geometric ratio, Lbc cancels
-    r_bp = (Dsi - OTL) / ((Dsi - OTL) + (OTL - Dto)*(1 - Dto/Xt))
-    Rb = math.exp(-3.7 * r_bp)
-
-    # Crossflow (D35 → D36)
-    dPi = 4 * fF * Gs**2 * Ntcc / (2 * rho_s)
-    dPx = dPi * Rl * Rb * max(Nb-1, 1)
-
-    # Window (D38 / D39 → D40)
+    # D37/D38/D39/D40: window
     Gw = mdots / math.sqrt(max(Acs * A_cw, 1e-12))
-    dPwt = Rl * (2 + 0.6*Ntcw) * Gw**2 / (2*rho_s)
-    dPwl = (Rl * (26*mu_s*Gw*(Ntcw/max(Dto,1e-9) + Lbc/max(D_hw,1e-9)**2))
-            / rho_s + Gw**2/rho_s)
-    dPw = (dPwt*Nb if Re > 200 else dPwl*Nb if Re < 50
-           else (dPwt*(Re-50)/150 + dPwl*(200-Re)/150)*Nb)
+    dP_win_turb = Nb * ((2 + 0.6*Ntcw) * Gw**2 / (2*rho_s)) * Rl
+    dP_win_lam  = Nb * (26*Gw*mu_s/rho_s*(Ntcw/(Xt-Dto) + Lbc/D_hw**2)
+                        + Gw**2/rho_s) * Rl
+    if Res > 200:
+        dP_window = dP_win_turb / 1000
+    elif Res < 50:
+        dP_window = dP_win_lam / 1000
+    else:
+        dP_window = (dP_win_turb*(1 - (200-Res)/150)
+                     + dP_win_lam*(200-Res)/150) / 1000
 
-    # End zone (D41 = dPi × Rl × Rb, both end zones combined)
-    dPe = dPi * Rl * Rb
+    # D41: end zone
+    dP_endzone = dP_ideal * (1 + Ntcw/Ntcc) * Rb * Rs / 1000
 
-    # Nozzle (D43 / D44 → D45 / D46)
-    sigmaS = A_csn / max(A_cse, 1e-9)
-    Gn = mdots / max(A_csn, 1e-9)
+    # D42–D46: nozzle (inlet uses rho(tis), outlet uses rho(tos))
+    Gn = mdots / max(min(A_cse, A_csn), 1e-12)
     Kc = (0.5 - 0.222*sigmaS) if sigmaS <= 0.18 else (0.55 - 0.5*sigmaS)
     Ke = (1 - sigmaS)**2
-    dPn = (Kc + Ke) * Gn**2 / (2*rho_s)
+    rho_in  = rho(Fts, fpars, tis)
+    rho_out = rho(Fts, fpars, tos)
+    dP_noz_in  = Gn**2 / (2000*rho_in)  * (Kc if A_csn > A_cse else Ke)
+    dP_noz_out = Gn**2 / (2000*rho_out) * (Ke if A_csn > A_cse else Kc)
 
-    return (dPx + dPw + dPe + dPn) / 1000
+    # D47: total
+    return dP_crossflow + dP_window + dP_endzone + dP_noz_in + dP_noz_out

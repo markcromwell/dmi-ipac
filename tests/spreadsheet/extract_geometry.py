@@ -56,6 +56,10 @@ GEOM_CELLS = {
     'rotl':  ('geometry', 'F8'),
     'Nb':    ('models',   'E22'),
     'sigmat':('geometry', 'F32'),
+    # Bell-Delaware pressure-drop correction factors (geometry-only; flow-independent)
+    'Rl':    ('geometry', 'F42'),   # baffle leakage correction, pressure loss
+    'Rb':    ('geometry', 'F43'),   # bundle bypass correction, pressure loss
+    'Rs':    ('geometry', 'F45'),   # end zone correction, pressure loss
 }
 
 

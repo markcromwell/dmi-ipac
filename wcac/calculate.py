@@ -153,8 +153,11 @@ def calculate(inp: WCACInputs, validate_inputs: bool = False) -> WCACResult:
     Q_cond  = m_cond * 2468400   # W  (h_fg = 2468.4 kJ/kg, DMI convention)
 
     # ── Shell-side pressure drop ──────────────────────────────────────────────
+    # Pass shell wall temp (tmsw) and inlet/outlet temps so the exact cell
+    # formulas D33 (variable-property) and D45/46 (nozzle densities) are honoured.
     T_ms = (tis + tos) / 2
-    dps_kP = shell_dp_kPa(mdots, T_ms, Fts, fpars, geo, config)
+    dps_kP = shell_dp_kPa(mdots, T_ms, Fts, fpars, geo, config,
+                          tmsw=tmsw, tis=tis, tos=tos)
 
     # ── Reynolds numbers for reporting ─────────────────────────────────────────
     T_mt = (tit + tot) / 2
