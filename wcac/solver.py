@@ -88,6 +88,11 @@ def wetwall_temp(Ft: str, fpar: float, omega: float,
     Returns (tw, count, tsw).
     VBA: wetwall_temp(Ft, fpar, omega, Rt, hs, ht, ts, tt)
     """
+    # McQuiston wet-wall method. (The VBA computes the saturated enthalpy Ew
+    # divided by (1+omegaw) before its loop and NOT divided inside the loop —
+    # an apparent inconsistency. Empirically the divided form throughout gives
+    # the closest match to the spreadsheet's reported design outputs, so we use
+    # it consistently here. See CALCULATION_DISCREPANCIES.md §wetwall.)
     tw = 0.5*(tt + ts); tdelta = (tt - ts)/4
     Eb = (Cp(Ft,fpar,tt)*tt + omega*hgwater(tt)) / (1+omega)
     count = 0
@@ -95,17 +100,13 @@ def wetwall_temp(Ft: str, fpar: float, omega: float,
         Psw = Pswater(tw)
         denom = fpar*1e5 - Psw
         omegaw = 18.015/Mw(Ft)*Psw/denom if denom > 0 else 0.0
-        Ew = Cp(Ft,fpar,tw)*tw + omegaw*hgwater(tw)   # VBA line 1185 (not divided by 1+omegaw)
+        Ew = (Cp(Ft,fpar,tw)*tw + omegaw*hgwater(tw)) / (1+omegaw)
         lhs = (Rt + hs**(-1))**(-1) * (tw - ts)
-        rhs = ht/Cp(Ft,fpar,tt) * (Eb - Ew/(1+omegaw))
+        rhs = ht/Cp(Ft,fpar,tt) * (Eb - Ew)
         if abs(lhs/rhs - 1) <= 0.001:
             break
         tw = tw - tdelta if lhs > rhs else tw + tdelta
         tdelta /= 2; count += 1
-    Psw = Pswater(tw)
-    denom2 = fpar*1e5 - Psw
-    omegaw = 18.015/Mw(Ft)*Psw/denom2 if denom2 > 0 else 0.0
-    Ew = (Cp(Ft,fpar,tw)*tw + omegaw*hgwater(tw)) / (1+omegaw)
     tsw = (ht/Cp(Ft,fpar,tt) * (Eb - Ew)) / hs + ts
     return tw, count, tsw
 

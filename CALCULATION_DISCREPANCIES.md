@@ -313,6 +313,60 @@ fF = fF_const * vp_corr                              # D34 (corrected f)
 
 ---
 
+## Discrepancy 5: The spreadsheet is internally inconsistent (important)
+
+Going over every VBA function and cell formula line-by-line to chase a true
+100% port surfaced a fundamental finding: **the spreadsheet's own reported
+outputs do not come purely from its own VBA functions.** Three places prove it:
+
+1. **Js (end-zone correction).** The VBA `Jtotal` function literally computes
+   `Js = ((Nb-1)+2·(Lbe/Lbc)^0.4)/((Nb-1)+2·(Lbe/Lbc))` = 0.839 for W0230.
+   The geometry-sheet cell F40 shows `Nb/((Nb-1)+Lbe/Lbc)` = 0.883. The
+   spreadsheet's *reported* shell HTC (595 Btu) is consistent with the 0.883
+   (cell) value, **not** the 0.839 the VBA code computes.
+
+2. **wetwall_temp enthalpy.** The VBA computes the saturated wall enthalpy `Ew`
+   divided by `(1+omegaw)` before its iteration loop (line 1174) but NOT divided
+   inside the loop (line 1185). Replicating that exact inconsistency makes the
+   dry/wet boundary area (Areqdry) match the spreadsheet *worse*, not better.
+
+3. **Shell HTC area-weighting.** The reported `hs` is an area-weighted blend of
+   wet- and dry-zone coefficients; matching the VBA's literal weighting leaves a
+   ~3.4% residual on this one diagnostic value.
+
+### What this means
+
+A bit-exact port of the *VBA source code* would NOT reproduce the spreadsheet's
+displayed answers, because Excel's cell formulas, the VBA, and the reported
+output cells disagree with each other on these specific factors. "100% faithful
+to the spreadsheet" therefore means **faithful to the reported design outputs**,
+which is what DMI's engineers see and validate against.
+
+### Where we landed (default = faithful to reported outputs)
+
+| Output | Agreement with spreadsheet | Basis |
+|--------|---------------------------|-------|
+| Surface area, Nt, Reynolds | exact | extracted geometry |
+| Tube outlet, shell outlet | <0.5% | solver |
+| Total heat (Q) | 0.3% | solver |
+| Tube dP | exact (0.0%) | VBA dPsolver, transcribed |
+| **Shell dP** | **exact (0.1%)** | **calc-sheet D32-D47, transcribed** |
+| Condensate, LMTD, U | <0.5% | solver |
+| Shell HTC (diagnostic) | 3.4% high | wet/dry weighting; see above |
+
+The shell HTC is the only value above 1%. It is a *reported diagnostic*, not an
+energy-balance term — Q and the outlet temperatures (which depend on it through
+U) are all within 0.5%, because the solver iterates to satisfy the area balance
+regardless of the small hs offset.
+
+### The default-vs-corrections rule
+
+- **Default output** uses whichever formula reproduces the spreadsheet's
+  *reported* values (e.g. the 0.883 Js path), so the port matches what users see.
+- **Optional/alternate** values (the literal VBA-source Js = 0.839, etc.) are
+  exposed on `WCACResult` as `Js_display` / `Js_VBA`, `Jtot_display` / `Jtot_VBA`,
+  `Ntcc_display` / `Ntcc_raw` so an engineer can inspect both.
+
 ## How to Toggle Between Both in the Code
 
 Both values are computed in `netlify/functions/calculate.py`. To add both
