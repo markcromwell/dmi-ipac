@@ -3,7 +3,10 @@
 Validation: 73 scenarios × ~13 outputs = 984 comparisons against the original
 Excel spreadsheet driven live via COM automation (tests/spreadsheet/compare.py).
 
-**Current pass rate: ~977/984 (99.3%)** within engineering tolerances.
+**Current pass rate: 980/984 (99.6%)** within engineering tolerances.
+After transcribing the exact shell-side dP cell formulas (D32–D47) and the
+exact Rl/Rb/Rs correction factors, shell dP dropped from up to 32% error to
+≤1%, and the only remaining failures are the 4 light-gas cases below.
 
 The remaining differences are documented here. None affect the primary outputs
 (Q, outlet temperatures, condensate) for normal air/water aftercooler duty,
