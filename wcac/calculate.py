@@ -161,6 +161,13 @@ def calculate(inp: WCACInputs, validate_inputs: bool = False) -> WCACResult:
     Ret = mdott/Act * Dti / max(mu(Ftt, fpart, T_mt), 1e-12)
     Res = mdots/Acs * Dto  / max(mu(Fts, fpars, T_ms), 1e-12)
 
+    # ── Effective HTCs (include fouling, as the spreadsheet D26/I26 report) ────
+    # Spreadsheet "Effective HTC" cells apply fouling resistance:
+    #   tube : (1/ht + Dto*Rft/Dti)^-1     shell: (1/hs + Rfs)^-1
+    # ht_avg / hs_avg from the solver are the clean (fouling-free) coefficients.
+    ht_eff = 1.0 / (1.0/ht_avg + Dto*Rft/Dti) if ht_avg > 0 else 0.0
+    hs_eff = 1.0 / (1.0/hs_avg + Rfs)         if hs_avg > 0 else 0.0
+
     # ── LMTD ─────────────────────────────────────────────────────────────────
     dT1 = tit - tos; dT2 = tot - tis
     if abs(dT1)>1e-9 and abs(dT2)>1e-9 and abs(dT1/dT2)>1e-9:
@@ -198,8 +205,8 @@ def calculate(inp: WCACInputs, validate_inputs: bool = False) -> WCACResult:
         condensing_Btu_h  = round(Q_cond * 3.41214, 0),   # Q_cond in W → Btu/h
         condensing_pct    = round(Q_cond / max(Q_kW*1000, 1)*100, 1),
         overall_U_btu     = round(Wm2K_to_Btu(U), 0),
-        tube_HTC_btu      = round(Wm2K_to_Btu(ht_avg), 0),
-        shell_HTC_btu     = round(Wm2K_to_Btu(hs_avg), 0),
+        tube_HTC_btu      = round(Wm2K_to_Btu(ht_eff), 0),
+        shell_HTC_btu     = round(Wm2K_to_Btu(hs_eff), 0),
         LMTD_R            = round(LMTD * 1.8, 1),
         area_ft2          = round(A * 10.7639, 1),
         tube_Re           = round(Ret, 0),
