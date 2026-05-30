@@ -186,7 +186,7 @@ def calculate(inp: WCACInputs) -> WCACResult:
         dP_tube_psi       = round(kPa_to_psi(dpt_kP), 2),
         dP_shell_psi      = round(kPa_to_psi(dps_kP), 2),
         condensate_lb_h   = round(m_cond * 7936.64, 1),
-        condensing_Btu_h  = round(Q_cond * 3.41214 / 1000, 0),
+        condensing_Btu_h  = round(Q_cond * 3.41214, 0),   # Q_cond in W → Btu/h
         condensing_pct    = round(Q_cond / max(Q_kW*1000, 1)*100, 1),
         overall_U_btu     = round(Wm2K_to_Btu(U), 0),
         tube_HTC_btu      = round(Wm2K_to_Btu(ht_avg), 0),

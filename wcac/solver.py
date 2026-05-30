@@ -350,7 +350,13 @@ def Qsolver(tit, tis, config, Ftt, Fts, fpart, fpars,
         Qg,U,ht,hs=Qa[0],Qa[5],Qa[7],Qa[8]
         tos=outlet_temp(Fts,fpars,Qg,mdots,tis,tit,0,0,config)
         tot=outlet_temp(Ftt,fpart,Qg,mdott,tit,tis,0,omegai,-config)
-        return [Qg,0,U,Qa[6],0,0,tit,dp_dew,tis,0,Qa[3],Qa[4],A,ht,hs,0,0,0,0,0,0]
+        # Tube-side pressure drop is still computed in the dry case
+        Gt = mdott / Act
+        tmtw_dry = (tit + tot)/2 + config
+        dp_dry = dPsolver(tit, tot, tmtw_dry, Ftt, fpart, Gt, Dti, Lt,
+                          sigmat, omegai, kappa, tubetyp, config)
+        return [Qg,0,U,Qa[6],dp_dry[0],dp_dry[2],tit,dp_dew,tis,0,
+                Qa[3],Qa[4],A,ht,hs,0,0,0,0,0,0]
 
     # ── Condensing case ──────────────────────────────────────────────────────
     Gt = mdott/Act; Gs = mdots/Acs
